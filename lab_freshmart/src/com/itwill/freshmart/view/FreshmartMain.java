@@ -8,7 +8,7 @@ public class FreshmartMain {
 
 	private JFrame frame;
 
-	/** ㅁㄴㄹ
+	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
