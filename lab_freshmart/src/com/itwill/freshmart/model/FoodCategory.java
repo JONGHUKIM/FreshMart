@@ -11,6 +11,8 @@ public class FoodCategory {
 	private Integer id;
 	private String category;
 
+	
+	
 	public FoodCategory() {
 
 	}
