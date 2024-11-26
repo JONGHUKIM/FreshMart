@@ -130,7 +130,7 @@ public class Freshmart {
 		}
 		
 		public FreshmartBuilder expirationdate(Date expirationdate) {
-			// Timestamp 타입 객체를 LocalDateTime 타입 객체로 변환해서 필드에 저장
+			// Date 타입 객체를 LocalDate 타입 객체로 변환해서 필드에 저장
 			if (expirationdate != null) { 
 				this.expirationdate = expirationdate.toLocalDate();
 			}
