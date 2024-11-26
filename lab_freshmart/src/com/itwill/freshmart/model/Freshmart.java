@@ -104,7 +104,7 @@ public class Freshmart {
 		private LocalDate expirationdate;
 		private String storage;
 		private Integer foodquantity;
-		private String IMG;
+		private String img;
 
 		private FreshmartBuilder() {
 		}
@@ -149,14 +149,14 @@ public class Freshmart {
 			return this;
 		}
 		
-		public FreshmartBuilder IMG(String IMG) {
-			this.IMG = IMG;
+		public FreshmartBuilder img(String img) {
+			this.img = img;
 			return this;
 		}
 
 		// (6) 외부 클래스 타입을 리턴하는 메서드
 		public Freshmart build() {
-			return new Freshmart(id, typeid, foodname, expirationdate, storage, foodquantity, IMG);
+			return new Freshmart(id, typeid, foodname, expirationdate, storage, foodquantity, img);
 		}
 
 	}
