@@ -45,7 +45,8 @@ public class FoodCategory {
         private Integer id;
         private String category;
         
-        private CategoryBuilder() {}
+        private CategoryBuilder() {
+        }
 
         public CategoryBuilder id(Integer id) {
             this.id = id;
