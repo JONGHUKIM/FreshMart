@@ -16,8 +16,8 @@ public class Freshmart {
 		public static final String COL_IMG = "IMG";
 	}
 
-	private Integer id; // freshmart 테이블의 PK
-	private Integer typeid; // freshmart 테이블의 FK
+	private Integer id; 
+	private Integer typeid; 
 	private String foodname;
 	private LocalDate expirationdate;
 	private String storage;
@@ -130,7 +130,7 @@ public class Freshmart {
 		}
 		
 		public FreshmartBuilder expirationdate(Date expirationdate) {
-			// Date 타입 객체를 LocalDate 타입 객체로 변환해서 필드에 저장
+			
 			if (expirationdate != null) { 
 				this.expirationdate = expirationdate.toLocalDate();
 			}
