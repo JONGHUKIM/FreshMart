@@ -98,8 +98,8 @@ public class Freshmart {
 	}
 	
 	public static class FreshmartBuilder {
-		private Integer id; // freshmart 테이블의 PK
-		private Integer typeid; // freshmart 테이블의 FK
+		private Integer id; 
+		private Integer typeid; 
 		private String foodname;
 		private LocalDate expirationdate;
 		private String storage;
