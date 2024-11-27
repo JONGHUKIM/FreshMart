@@ -93,33 +93,33 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 
 		lblFoodName = new JLabel("식품 이름:");
 		lblFoodName.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblFoodName.setBounds(236, 74, 80, 20);
+		lblFoodName.setBounds(237, 10, 80, 20);
 		contentPane.add(lblFoodName);
 
 		foodNameField = new JTextField();
 		foodNameField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		foodNameField.setBounds(316, 74, 131, 25);
+		foodNameField.setBounds(317, 10, 131, 25);
 		contentPane.add(foodNameField);
 		foodNameField.setColumns(10);
 
 		lblStorage = new JLabel("보관 장소:");
 		lblStorage.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblStorage.setBounds(236, 104, 80, 20);
+		lblStorage.setBounds(237, 40, 80, 20);
 		contentPane.add(lblStorage);
 
 		storageComboBox = new JComboBox<>(new String[] { "냉장실", "냉동실" });
 		storageComboBox.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		storageComboBox.setBounds(316, 104, 131, 25);
+		storageComboBox.setBounds(317, 40, 131, 25);
 		contentPane.add(storageComboBox);
 
 		lblFoodCategory = new JLabel("식품 유형:");
 		lblFoodCategory.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblFoodCategory.setBounds(236, 134, 80, 20);
+		lblFoodCategory.setBounds(237, 70, 80, 20);
 		contentPane.add(lblFoodCategory);
 
 		categoryComboBox_1 = new JComboBox<>();
 		categoryComboBox_1.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		categoryComboBox_1.setBounds(316, 134, 131, 25);
+		categoryComboBox_1.setBounds(317, 70, 131, 25);
 		contentPane.add(categoryComboBox_1);
 
 		List<String> foodCategories = FreshmartDao.INSTANCE.getFoodCategoryList();
@@ -129,23 +129,23 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 
 		lblExpirationDate = new JLabel("유통 기한:");
 		lblExpirationDate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblExpirationDate.setBounds(236, 164, 80, 20);
+		lblExpirationDate.setBounds(237, 100, 80, 20);
 		contentPane.add(lblExpirationDate);
 
 		expirationDateField = new JTextField();
 		expirationDateField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		expirationDateField.setBounds(316, 164, 131, 25);
+		expirationDateField.setBounds(317, 100, 131, 25);
 		contentPane.add(expirationDateField);
 		expirationDateField.setColumns(10);
 
-		lblFoodQuantity = new JLabel("식품 갯수:");
+		lblFoodQuantity = new JLabel("식품 개수:");
 		lblFoodQuantity.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblFoodQuantity.setBounds(236, 194, 80, 20);
+		lblFoodQuantity.setBounds(237, 130, 80, 20);
 		contentPane.add(lblFoodQuantity);
 
 		foodQuantityField = new JTextField();
 		foodQuantityField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		foodQuantityField.setBounds(316, 194, 131, 25);
+		foodQuantityField.setBounds(317, 130, 131, 25);
 		contentPane.add(foodQuantityField);
 		foodQuantityField.setColumns(10);
 
@@ -168,13 +168,13 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 
 		btnSave = new JButton("저장");
 		btnSave.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnSave.setBounds(236, 229, 100, 30);
+		btnSave.setBounds(236, 160, 100, 30);
 		btnSave.addActionListener(e -> saveFoodItem(categoryComboBox_1));
 		contentPane.add(btnSave);
 
 		btnCancel = new JButton("취소");
 		btnCancel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnCancel.setBounds(348, 229, 100, 30);
+		btnCancel.setBounds(348, 160, 100, 30);
 		btnCancel.addActionListener(e -> {
 			dispose();
 		});
