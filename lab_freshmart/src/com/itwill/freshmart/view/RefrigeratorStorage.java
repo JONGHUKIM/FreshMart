@@ -1,6 +1,7 @@
 package com.itwill.freshmart.view;
 
 import java.awt.EventQueue;
+import java.awt.Image;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +21,8 @@ import javax.swing.border.EmptyBorder;
 
 import com.itwill.freshmart.controller.FreshmartDao;
 import com.itwill.freshmart.model.Freshmart;
+import javax.swing.SwingConstants;
+import java.awt.Font;
 
 public class RefrigeratorStorage extends JFrame {
 
@@ -31,6 +34,16 @@ public class RefrigeratorStorage extends JFrame {
 	private JTextField expirationDateField;
 	private JTextField foodQuantityField;
 	private String imagePath;
+	private JLabel lblFoodName;
+	private JLabel lblStorage;
+	private JLabel lblFoodCategory;
+	private JLabel lblExpirationDate;
+	private JLabel lblFoodQuantity;
+	private JLabel lblImage;
+	private JButton btnSelectImage;
+	private JButton btnSave;
+	private JComboBox<String> categoryComboBox_1;
+	private JButton btnCancel;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(() -> {
@@ -44,78 +57,102 @@ public class RefrigeratorStorage extends JFrame {
 	}
 
 	public RefrigeratorStorage() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 650);
+		setTitle("보관하기");
+	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 482, 308);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		JLabel lblFoodName = new JLabel("식품 이름:");
-		lblFoodName.setBounds(20, 20, 80, 20);
+		lblFoodName = new JLabel("식품 이름:");
+		lblFoodName.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		lblFoodName.setBounds(236, 74, 80, 20);
 		contentPane.add(lblFoodName);
 
 		foodNameField = new JTextField();
-		foodNameField.setBounds(100, 20, 200, 25);
+		foodNameField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		foodNameField.setBounds(316, 74, 131, 25);
 		contentPane.add(foodNameField);
 		foodNameField.setColumns(10);
 
-		JLabel lblStorage = new JLabel("보관 장소:");
-		lblStorage.setBounds(20, 60, 80, 20);
+		lblStorage = new JLabel("보관 장소:");
+		lblStorage.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		lblStorage.setBounds(236, 104, 80, 20);
 		contentPane.add(lblStorage);
 
 		storageComboBox = new JComboBox<>(new String[] { "냉장실", "냉동실" });
-		storageComboBox.setBounds(100, 60, 200, 25);
+		storageComboBox.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		storageComboBox.setBounds(316, 104, 131, 25);
 		contentPane.add(storageComboBox);
 
-		JLabel lblFoodCategory = new JLabel("식품 유형:");
-		lblFoodCategory.setBounds(20, 100, 80, 20);
+		lblFoodCategory = new JLabel("식품 유형:");
+		lblFoodCategory.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		lblFoodCategory.setBounds(236, 134, 80, 20);
 		contentPane.add(lblFoodCategory);
 
-		JComboBox<String> categoryComboBox = new JComboBox<>();
-		categoryComboBox.setBounds(100, 100, 200, 25);
-		contentPane.add(categoryComboBox);
+		categoryComboBox_1 = new JComboBox<>();
+		categoryComboBox_1.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		categoryComboBox_1.setBounds(316, 134, 131, 25);
+		contentPane.add(categoryComboBox_1);
 
 		List<String> foodCategories = FreshmartDao.INSTANCE.getFoodCategoryList();
 		for (String category : foodCategories) {
-			categoryComboBox.addItem(category);
+			categoryComboBox_1.addItem(category);
 		}
 
-		JLabel lblExpirationDate = new JLabel("유통 기한:");
-		lblExpirationDate.setBounds(20, 140, 80, 20);
+		lblExpirationDate = new JLabel("유통 기한:");
+		lblExpirationDate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		lblExpirationDate.setBounds(236, 164, 80, 20);
 		contentPane.add(lblExpirationDate);
 
 		expirationDateField = new JTextField();
-		expirationDateField.setBounds(100, 140, 200, 25);
+		expirationDateField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		expirationDateField.setBounds(316, 164, 131, 25);
 		contentPane.add(expirationDateField);
 		expirationDateField.setColumns(10);
 
-		JLabel lblFoodQuantity = new JLabel("식품 갯수:");
-		lblFoodQuantity.setBounds(20, 180, 80, 20);
+		lblFoodQuantity = new JLabel("식품 갯수:");
+		lblFoodQuantity.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		lblFoodQuantity.setBounds(236, 194, 80, 20);
 		contentPane.add(lblFoodQuantity);
 
 		foodQuantityField = new JTextField();
-		foodQuantityField.setBounds(100, 180, 200, 25);
+		foodQuantityField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		foodQuantityField.setBounds(316, 194, 131, 25);
 		contentPane.add(foodQuantityField);
 		foodQuantityField.setColumns(10);
 
-		JLabel lblImage = new JLabel("이미지:");
-		lblImage.setBounds(20, 220, 80, 20);
+		lblImage = new JLabel("이미지:");
+		lblImage.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		lblImage.setBounds(12, 10, 80, 20);
 		contentPane.add(lblImage);
 
 		imageLabel = new JLabel("이미지가 선택되지 않았습니다.");
-		imageLabel.setBounds(20, 250, 400, 300);
+		imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		imageLabel.setBounds(12, 34, 212, 225);
 		contentPane.add(imageLabel);
 
-		JButton btnSelectImage = new JButton("사진 첨부");
-		btnSelectImage.setBounds(320, 60, 100, 25);
+		btnSelectImage = new JButton("사진 첨부");
+		btnSelectImage.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		btnSelectImage.setBounds(67, 8, 157, 25);
 		btnSelectImage.addActionListener(e -> showImageChooser());
 		contentPane.add(btnSelectImage);
 
-		JButton btnSave = new JButton("저장");
-		btnSave.setBounds(170, 450, 100, 30);
-		btnSave.addActionListener(e -> saveFoodItem(categoryComboBox));
+		btnSave = new JButton("저장");
+		btnSave.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		btnSave.setBounds(236, 229, 100, 30);
+		btnSave.addActionListener(e -> saveFoodItem(categoryComboBox_1));
 		contentPane.add(btnSave);
+
+		btnCancel = new JButton("취소");
+		btnCancel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		btnCancel.setBounds(348, 229, 100, 30);
+		btnCancel.addActionListener(e -> {
+			dispose();
+		});
+		contentPane.add(btnCancel);
 	}
 
 	private void showImageChooser() {
@@ -126,12 +163,22 @@ public class RefrigeratorStorage extends JFrame {
 			imagePath = selectedFile.getAbsolutePath();
 
 			try {
-				ImageIcon icon = new ImageIcon(imagePath);
-				imageLabel.setIcon(icon);
+
+				ImageIcon originalIcon = new ImageIcon(imagePath);
+
+				int labelWidth = imageLabel.getWidth();
+				int labelHeight = imageLabel.getHeight();
+
+				Image image = originalIcon.getImage();
+				Image resizedImage = image.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
+
+				ImageIcon resizedIcon = new ImageIcon(resizedImage);
+				imageLabel.setIcon(resizedIcon);
 				imageLabel.setText("");
+
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "이미지를 불러올 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "이미지를 불러올 수 없습니다.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
@@ -145,14 +192,14 @@ public class RefrigeratorStorage extends JFrame {
 
 		if (foodName.isEmpty() || storage == null || selectedCategory == null || expirationDateStr.isEmpty()
 				|| foodQuantityStr.isEmpty()) {
-			JOptionPane.showMessageDialog(this, "모든 항목을 입력해주세요.", "오류", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this, "모든 항목을 입력해주세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
 		try {
 
 			if (expirationDateStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
@@ -171,12 +218,12 @@ public class RefrigeratorStorage extends JFrame {
 			}
 
 			if (expirationDate == null) {
-				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
 			if (expirationDate.isBefore(LocalDate.now())) {
-				JOptionPane.showMessageDialog(this, "올바른 유통기한을 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 유통기한을 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
@@ -184,7 +231,7 @@ public class RefrigeratorStorage extends JFrame {
 			try {
 				foodQuantity = Integer.parseInt(foodQuantityStr);
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this, "올바른 갯수를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 갯수를 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
