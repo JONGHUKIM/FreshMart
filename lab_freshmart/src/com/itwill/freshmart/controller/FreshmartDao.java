@@ -24,6 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -73,6 +75,57 @@ public enum FreshmartDao {
 		return Freshmart.builder().id(id).typeid(typeid).foodname(foodname).expirationdate(expirationdate)
 				.storage(storage).foodquantity(foodquantity).img(img).build();
 
+	}
+	
+	public List<String> getFoodCategoryList() {
+	    List<String> foodCategories = new ArrayList<>();
+	    Connection conn = null;
+	    Statement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	        stmt = conn.createStatement();
+	        String sql = "SELECT CATEGORY FROM FOOD_CATEGORY";
+	        rs = stmt.executeQuery(sql);
+
+	        while (rs.next()) {
+	            foodCategories.add(rs.getString("CATEGORY"));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        closeResources(conn, stmt, rs);
+	    }
+
+	    return foodCategories;
+	}
+	
+	public int getFoodCategoryIdByName(String categoryName) {
+	    int typeid = -1;
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	        String sql = "SELECT ID FROM FOOD_CATEGORY WHERE CATEGORY = ?";
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setString(1, categoryName);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            typeid = rs.getInt("ID");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        closeResources(conn, stmt, rs);
+	    }
+
+	    return typeid;
 	}
 
 	private static final String SQL_INSERT = String.format(
