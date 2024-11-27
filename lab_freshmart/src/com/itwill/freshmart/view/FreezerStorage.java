@@ -66,6 +66,8 @@ public class FreezerStorage extends JFrame {
 
 	public void initialize() {
 		
+		
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -78,11 +80,12 @@ public class FreezerStorage extends JFrame {
 
 		this.setIconImage(img);
 
-		setSize(482, 591);
+		setSize(482, 585);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 308);
 		
 		setLocationRelativeTo(parentComponent);
+		
 
 		lblFoodName = new JLabel("식품 이름:");
 		lblFoodName.setFont(new Font("맑은 고딕", Font.BOLD, 15));
@@ -146,5 +149,4 @@ public class FreezerStorage extends JFrame {
 		});
 		contentPane.add(btnCheck);
 	}
-
 }
