@@ -129,8 +129,7 @@ public class FreshmartMain implements CreateNotify {
 		model = new DefaultTableModel(null, COLUMN_NAMES);
 
 		for (Freshmart f : list) {
-			Object[] rowData = { f.getIMG(), f.getFoodname(), f.getStorage(), f.getTypeid(), f.getExpirationdate(),
-					f.getFoodquantity(),
+			Object[] rowData = { f.getIMG(), f.getFoodname(), f.getTypeid(), f.getFoodquantity(), f.getExpirationdate()
 
 			};
 			model.addRow(rowData);

@@ -33,19 +33,17 @@ public class FreezerStorage extends JFrame {
 	private JPanel contentPane;
 	private JTextField foodNameField;
 	private JLabel imageLabel;
-	private JComboBox<String> storageComboBox;
 	private JTextField expirationDateField;
 	private JTextField foodQuantityField;
 	private String imagePath;
 	private JLabel lblFoodName;
-	private JLabel lblStorage;
 	private JLabel lblFoodCategory;
 	private JLabel lblExpirationDate;
 	private JLabel lblFoodQuantity;
 	private JButton btnSelectImage;
 	private JButton btnSave;
 	private JComboBox<String> categoryComboBox_1;
-	private JButton btnCancel;
+	private JButton btnCheck;
 
 	private Component parentComponent;
 	private CreateNotify app;
@@ -69,14 +67,14 @@ public class FreezerStorage extends JFrame {
 	}
 
 	public void initialize() {
-		setTitle("보관하기");
+		setTitle("냉동실");
 
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
 
 		this.setIconImage(img);
 
-		setSize(400, 300);
+		setSize(482, 586);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 308);
 		
@@ -98,24 +96,14 @@ public class FreezerStorage extends JFrame {
 		contentPane.add(foodNameField);
 		foodNameField.setColumns(10);
 
-		lblStorage = new JLabel("보관 장소:");
-		lblStorage.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblStorage.setBounds(237, 40, 80, 20);
-		contentPane.add(lblStorage);
-
-		storageComboBox = new JComboBox<>(new String[] { "냉장실", "냉동실" });
-		storageComboBox.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		storageComboBox.setBounds(317, 40, 131, 25);
-		contentPane.add(storageComboBox);
-
 		lblFoodCategory = new JLabel("식품 유형:");
 		lblFoodCategory.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblFoodCategory.setBounds(237, 70, 80, 20);
+		lblFoodCategory.setBounds(237, 40, 80, 20);
 		contentPane.add(lblFoodCategory);
 
 		categoryComboBox_1 = new JComboBox<>();
 		categoryComboBox_1.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		categoryComboBox_1.setBounds(317, 70, 131, 25);
+		categoryComboBox_1.setBounds(317, 40, 131, 25);
 		contentPane.add(categoryComboBox_1);
 
 		List<String> foodCategories = FreshmartDao.INSTANCE.getFoodCategoryList();
@@ -125,23 +113,23 @@ public class FreezerStorage extends JFrame {
 
 		lblExpirationDate = new JLabel("유통 기한:");
 		lblExpirationDate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblExpirationDate.setBounds(237, 100, 80, 20);
+		lblExpirationDate.setBounds(237, 70, 80, 20);
 		contentPane.add(lblExpirationDate);
 
 		expirationDateField = new JTextField();
 		expirationDateField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		expirationDateField.setBounds(317, 100, 131, 25);
+		expirationDateField.setBounds(317, 70, 131, 25);
 		contentPane.add(expirationDateField);
 		expirationDateField.setColumns(10);
 
 		lblFoodQuantity = new JLabel("식품 개수:");
 		lblFoodQuantity.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		lblFoodQuantity.setBounds(237, 130, 80, 20);
+		lblFoodQuantity.setBounds(237, 100, 80, 20);
 		contentPane.add(lblFoodQuantity);
 
 		foodQuantityField = new JTextField();
 		foodQuantityField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		foodQuantityField.setBounds(317, 130, 131, 25);
+		foodQuantityField.setBounds(317, 100, 131, 25);
 		contentPane.add(foodQuantityField);
 		foodQuantityField.setColumns(10);
 
@@ -151,13 +139,13 @@ public class FreezerStorage extends JFrame {
 		imageLabel.setBounds(12, 10, 212, 249);
 		contentPane.add(imageLabel);
 
-		btnCancel = new JButton("취소");
-		btnCancel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnCancel.setBounds(348, 165, 100, 30);
-		btnCancel.addActionListener(e -> {
+		btnCheck = new JButton("확인");
+		btnCheck.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		btnCheck.setBounds(237, 130, 212, 30);
+		btnCheck.addActionListener(e -> {
 			dispose();
 		});
-		contentPane.add(btnCancel);
+		contentPane.add(btnCheck);
 	}
 
 	private void showImageChooser() {
