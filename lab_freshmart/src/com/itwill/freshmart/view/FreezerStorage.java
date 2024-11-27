@@ -21,11 +21,10 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.itwill.freshmart.controller.FreshmartDao;
-import com.itwill.freshmart.view.RefrigeratorStorageCreateFrame.CreateNotify;
 
 public class FreezerStorage extends JFrame {
 
-	public interface CreateNotify {
+	public interface FreezerNotify {
 		void notifyCreateSuccess();
 	}
 
@@ -40,15 +39,14 @@ public class FreezerStorage extends JFrame {
 	private JLabel lblFoodCategory;
 	private JLabel lblExpirationDate;
 	private JLabel lblFoodQuantity;
-	private JButton btnSelectImage;
-	private JButton btnSave;
+
 	private JComboBox<String> categoryComboBox_1;
 	private JButton btnCheck;
 
 	private Component parentComponent;
-	private CreateNotify app;
+	private FreezerNotify app;
 
-	public static void showFreezerStorage(Component parentComponent, CreateNotify app) {
+	public static void showFreezerStorage(Component parentComponent, FreezerNotify app) {
 		EventQueue.invokeLater(() -> {
 			try {
 				FreezerStorage frame = new FreezerStorage(parentComponent, app);
@@ -59,7 +57,7 @@ public class FreezerStorage extends JFrame {
 		});
 	}
 
-	private FreezerStorage(Component parentComponent, CreateNotify app) {
+	private FreezerStorage(Component parentComponent, FreezerNotify app) {
 
 		this.parentComponent = parentComponent;
 		this.app = app;
@@ -74,7 +72,7 @@ public class FreezerStorage extends JFrame {
 
 		this.setIconImage(img);
 
-		setSize(482, 586);
+		setSize(482, 535);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 308);
 		
@@ -146,34 +144,6 @@ public class FreezerStorage extends JFrame {
 			dispose();
 		});
 		contentPane.add(btnCheck);
-	}
-
-	private void showImageChooser() {
-		JFileChooser fileChooser = new JFileChooser();
-		int result = fileChooser.showOpenDialog(this);
-		if (result == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = fileChooser.getSelectedFile();
-			imagePath = selectedFile.getAbsolutePath();
-
-			try {
-
-				ImageIcon originalIcon = new ImageIcon(imagePath);
-
-				int labelWidth = imageLabel.getWidth();
-				int labelHeight = imageLabel.getHeight();
-
-				Image image = originalIcon.getImage();
-				Image resizedImage = image.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
-
-				ImageIcon resizedIcon = new ImageIcon(resizedImage);
-				imageLabel.setIcon(resizedIcon);
-				imageLabel.setText("");
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "이미지를 불러올 수 없습니다.", "WARNIG", JOptionPane.WARNING_MESSAGE);
-			}
-		}
 	}
 
 }
