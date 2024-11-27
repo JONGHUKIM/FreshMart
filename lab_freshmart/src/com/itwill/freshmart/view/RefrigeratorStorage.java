@@ -2,6 +2,7 @@ package com.itwill.freshmart.view;
 
 import java.awt.EventQueue;
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -58,6 +59,13 @@ public class RefrigeratorStorage extends JFrame {
 
 	public RefrigeratorStorage() {
 		setTitle("보관하기");
+
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\1");
+        
+        this.setIconImage(img);
+
+        setSize(400, 300);
 	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 308);
 		contentPane = new JPanel();
