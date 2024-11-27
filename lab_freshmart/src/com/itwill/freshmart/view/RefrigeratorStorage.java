@@ -114,7 +114,7 @@ public class RefrigeratorStorage extends JFrame {
                 .typeid(1)
                 .foodname(foodName)
                 .expirationdate(LocalDate.now())
-                .storage(storage.equals("냉장실") ? "T" : "F")
+                .storage(storage.equals("냉장실") ? "냉장실" : "냉동실")
                 .foodquantity(1)
                 .img(imagePath)
                 .build();
