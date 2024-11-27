@@ -28,9 +28,6 @@ import java.awt.Font;
 
 public class RefrigeratorStorageCreateFrame extends JFrame {
 
-	public interface CreateNotify {
-		void notifyCreateSuccess();
-	}
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -52,12 +49,12 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 	private JButton btnCancel;
 
 	private Component parentComponent;
-	private CreateNotify app;
+	
 
-	public static void showRefrigeratorStorageCreateFrame(Component parentComponent, CreateNotify app) {
+	public static void showRefrigeratorStorageCreateFrame(Component parentComponent) {
 		EventQueue.invokeLater(() -> {
 			try {
-				RefrigeratorStorageCreateFrame frame = new RefrigeratorStorageCreateFrame(parentComponent, app);
+				RefrigeratorStorageCreateFrame frame = new RefrigeratorStorageCreateFrame(parentComponent);
 				frame.setVisible(true);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -65,10 +62,9 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 		});
 	}
 
-	private RefrigeratorStorageCreateFrame(Component parentComponent, CreateNotify app) {
+	private RefrigeratorStorageCreateFrame(Component parentComponent) {
 
 		this.parentComponent = parentComponent;
-		this.app = app;
 		initialize();
 	}
 
@@ -269,7 +265,6 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 			int result = FreshmartDao.INSTANCE.create(freshmart);
 			if (result == 1) {
 				JOptionPane.showMessageDialog(this, "저장되었습니다.", "정보", JOptionPane.INFORMATION_MESSAGE);
-				app.notifyCreateSuccess();
 				dispose();
 			} else {
 				JOptionPane.showMessageDialog(this, "저장에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);

@@ -4,7 +4,6 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -15,14 +14,10 @@ import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import com.itwill.freshmart.controller.FreshmartDao;
-import com.itwill.freshmart.model.Freshmart;
-import com.itwill.freshmart.view.RefrigeratorStorageCreateFrame.CreateNotify;
 
-public class FreshmartMain implements CreateNotify {
+public class FreshmartMain {
 
-	private static final String[] COLUMN_NAMES = { "사진", "식품유형", "식품이름", "식품갯수", "유통기한 D-DAY" };
 
-	private DefaultTableModel model;
 	private JFrame frame;
 	private JPanel btnPanel;
 	private JButton btnRefrigerator;
@@ -30,11 +25,10 @@ public class FreshmartMain implements CreateNotify {
 	private JButton btnTodayWhatIeat;
 	private JButton btnRefrigeratorStorage;
 	private JButton btnShare;
-	private JTable table;
 	private JButton btnRecipe;
 	private JLabel lblFreshmartVer;
 
-	private FreshmartDao freshmartDao;
+
 
 	/**
 	 * Launch the application.
@@ -56,6 +50,7 @@ public class FreshmartMain implements CreateNotify {
 	 * Create the application.
 	 */
 	public FreshmartMain() {
+
 		initialize();
 	}
 
@@ -92,7 +87,7 @@ public class FreshmartMain implements CreateNotify {
 
 		btnRefrigeratorStorage = new JButton("보관");
 		btnRefrigeratorStorage.addActionListener(
-				e -> RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame, FreshmartMain.this));
+				e -> RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame));
 
 		btnRefrigeratorStorage.setFont(new Font("맑은 고딕", Font.BOLD, 20));
 		btnRefrigeratorStorage.setBounds(12, 155, 399, 135);
@@ -120,10 +115,11 @@ public class FreshmartMain implements CreateNotify {
 		btnPanel.add(lblFreshmartVer);
 	}
 
-	private void initializeTable() {
-		List<Freshmart> list = freshmartDao.read();
-		resetTableModel(list);
-	}
+/*
+private void initializeTable() {
+ List<Freshmart> list = freshmartDao.read();
+resetTableModel(list);
+}
 
 	private void resetTableModel(List<Freshmart> list) {
 		model = new DefaultTableModel(null, COLUMN_NAMES);
@@ -138,10 +134,12 @@ public class FreshmartMain implements CreateNotify {
 		table.setModel(model);
 	}
 
-	// List<Freshmart> freezerItems = FreshmartDao.INSTANCE.readByStorage("냉동실");
+ List<Freshmart> freezerItems = FreshmartDao.INSTANCE.readByStorage("냉동실");
 
-	@Override
-	public void notifyCreateSuccess() {
-		initializeTable();
-	}
+@Override
+public void notifyCreateSuccess() {
+initializeTable();
 }
+*/
+}
+
