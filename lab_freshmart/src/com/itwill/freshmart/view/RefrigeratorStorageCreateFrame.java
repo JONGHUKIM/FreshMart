@@ -269,6 +269,8 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 			int result = FreshmartDao.INSTANCE.create(freshmart);
 			if (result == 1) {
 				JOptionPane.showMessageDialog(this, "저장되었습니다.", "정보", JOptionPane.INFORMATION_MESSAGE);
+				app.notifyCreateSuccess();
+				dispose();
 			} else {
 				JOptionPane.showMessageDialog(this, "저장에 실패했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 			}
@@ -276,5 +278,6 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, "저장 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 		}
+		
 	}
 }

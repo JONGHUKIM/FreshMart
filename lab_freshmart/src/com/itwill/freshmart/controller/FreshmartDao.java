@@ -77,55 +77,108 @@ public enum FreshmartDao {
 
 	}
 	
-	public List<String> getFoodCategoryList() {
-	    List<String> foodCategories = new ArrayList<>();
-	    Connection conn = null;
-	    Statement stmt = null;
-	    ResultSet rs = null;
 
-	    try {
-	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	        stmt = conn.createStatement();
-	        String sql = "SELECT CATEGORY FROM FOOD_CATEGORY";
-	        rs = stmt.executeQuery(sql);
+	private static final String SQL_SELECT_ALL = String.format("select * from %s order by %s desc", TBL_FRESHMART,
+			COL_ID);
 
-	        while (rs.next()) {
-	            foodCategories.add(rs.getString("CATEGORY"));
-	        }
+	public List<Freshmart> read() {
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        closeResources(conn, stmt, rs);
-	    }
+		List<Freshmart> blogs = new ArrayList<>();
 
-	    return foodCategories;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+			stmt = conn.prepareStatement(SQL_SELECT_ALL);
+
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				Freshmart freshmart = getFreshmartFromResultSet(rs);
+				blogs.add(freshmart);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return blogs;
 	}
 	
-	public int getFoodCategoryIdByName(String categoryName) {
-	    int typeid = -1;
-	    Connection conn = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
+	public List<Freshmart> readByStorage(String storageType) {
+	    List<Freshmart> resultList = new ArrayList<>();
+	    String query = "SELECT * FROM " + TBL_FRESHMART + " WHERE " + COL_STORAGE + " = ?";
 
-	    try {
-	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	        String sql = "SELECT ID FROM FOOD_CATEGORY WHERE CATEGORY = ?";
-	        stmt = conn.prepareStatement(sql);
-	        stmt.setString(1, categoryName);
-	        rs = stmt.executeQuery();
+	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	         PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-	        if (rs.next()) {
-	            typeid = rs.getInt("ID");
+	        pstmt.setString(1, storageType);  // 파라미터로 받은 storageType을 설정
+	        
+	        try (ResultSet rs = pstmt.executeQuery()) {
+	            while (rs.next()) {
+	                resultList.add(getFreshmartFromResultSet(rs));
+	            }
 	        }
-
 	    } catch (SQLException e) {
 	        e.printStackTrace();
-	    } finally {
-	        closeResources(conn, stmt, rs);
 	    }
+	    return resultList;
+	}
+	
 
-	    return typeid;
+	public List<String> getFoodCategoryList() {
+		List<String> foodCategories = new ArrayList<>();
+		Connection conn = null;
+		Statement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			stmt = conn.createStatement();
+			String sql = "SELECT CATEGORY FROM FOOD_CATEGORY";
+			rs = stmt.executeQuery(sql);
+
+			while (rs.next()) {
+				foodCategories.add(rs.getString("CATEGORY"));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return foodCategories;
+	}
+
+	public int getFoodCategoryIdByName(String categoryName) {
+		int typeid = -1;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			String sql = "SELECT ID FROM FOOD_CATEGORY WHERE CATEGORY = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, categoryName);
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				typeid = rs.getInt("ID");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return typeid;
 	}
 
 	private static final String SQL_INSERT = String.format(
@@ -179,26 +232,26 @@ public enum FreshmartDao {
 				BufferedImage image;
 
 				if (freshmart.getIMG() != null && !freshmart.getIMG().isEmpty()) {
-				    File imageFile1 = new File(freshmart.getIMG());
-				    if (imageFile1.exists()) {
-				        image = ImageIO.read(imageFile1);
-				    } else {
-				        image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-				        Graphics2D g2d = image.createGraphics();
-				        g2d.setColor(Color.WHITE);
-				        g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-				        g2d.setColor(Color.BLACK);
-				        g2d.drawString("기본 이미지", 10, 50);
-				        g2d.dispose();
-				    }
+					File imageFile1 = new File(freshmart.getIMG());
+					if (imageFile1.exists()) {
+						image = ImageIO.read(imageFile1);
+					} else {
+						image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+						Graphics2D g2d = image.createGraphics();
+						g2d.setColor(Color.WHITE);
+						g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+						g2d.setColor(Color.BLACK);
+						g2d.drawString("기본 이미지", 10, 50);
+						g2d.dispose();
+					}
 				} else {
-				    image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-				    Graphics2D g2d = image.createGraphics();
-				    g2d.setColor(Color.WHITE);
-				    g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
-				    g2d.setColor(Color.BLACK);
-				    g2d.drawString("기본 이미지", 10, 50);
-				    g2d.dispose();
+					image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g2d = image.createGraphics();
+					g2d.setColor(Color.WHITE);
+					g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+					g2d.setColor(Color.BLACK);
+					g2d.drawString("기본 이미지", 10, 50);
+					g2d.dispose();
 				}
 
 				ImageIO.write(image, "jpg", imageFile);
