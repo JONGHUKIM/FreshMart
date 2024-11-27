@@ -61,7 +61,7 @@ public class RefrigeratorStorage extends JFrame {
 		setTitle("보관하기");
 
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\1");
+        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
         
         this.setIconImage(img);
 
