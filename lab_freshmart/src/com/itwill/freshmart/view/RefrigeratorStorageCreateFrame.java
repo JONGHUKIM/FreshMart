@@ -1,5 +1,6 @@
 package com.itwill.freshmart.view;
 
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -25,7 +26,11 @@ import com.itwill.freshmart.model.Freshmart;
 import javax.swing.SwingConstants;
 import java.awt.Font;
 
-public class RefrigeratorStorage extends JFrame {
+public class RefrigeratorStorageCreateFrame extends JFrame {
+
+	public interface CreateNotify {
+		void notifyCreateSuccess();
+	}
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -46,10 +51,13 @@ public class RefrigeratorStorage extends JFrame {
 	private JComboBox<String> categoryComboBox_1;
 	private JButton btnCancel;
 
-	public static void main(String[] args) {
+	private Component parentComponent;
+	private CreateNotify app;
+
+	public static void showRefrigeratorStorageCreateFrame(Component parentComponent, CreateNotify app) {
 		EventQueue.invokeLater(() -> {
 			try {
-				RefrigeratorStorage frame = new RefrigeratorStorage();
+				RefrigeratorStorageCreateFrame frame = new RefrigeratorStorageCreateFrame(parentComponent, app);
 				frame.setVisible(true);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -57,17 +65,27 @@ public class RefrigeratorStorage extends JFrame {
 		});
 	}
 
-	public RefrigeratorStorage() {
+	private RefrigeratorStorageCreateFrame(Component parentComponent, CreateNotify app) {
+
+		this.parentComponent = parentComponent;
+		this.app = app;
+		initialize();
+	}
+
+	public void initialize() {
 		setTitle("보관하기");
 
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
-        
-        this.setIconImage(img);
+		Toolkit toolkit = Toolkit.getDefaultToolkit();
+		Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
 
-        setSize(400, 300);
-	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.setIconImage(img);
+
+		setSize(400, 300);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 308);
+		
+		setLocationRelativeTo(parentComponent);
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
