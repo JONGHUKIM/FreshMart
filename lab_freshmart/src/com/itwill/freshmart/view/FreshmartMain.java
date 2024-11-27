@@ -18,14 +18,11 @@ import com.itwill.freshmart.controller.FreshmartDao;
 import com.itwill.freshmart.model.Freshmart;
 import com.itwill.freshmart.view.RefrigeratorStorageCreateFrame.CreateNotify;
 
-
 public class FreshmartMain implements CreateNotify {
-	
-    private static final String[] COLUMN_NAMES = {
-            "사진", "식품유형", "식품이름", "식품갯수", "유통기한 D-DAY"
-    };
-    
-    private DefaultTableModel model;
+
+	private static final String[] COLUMN_NAMES = { "사진", "식품유형", "식품이름", "식품갯수", "유통기한 D-DAY" };
+
+	private DefaultTableModel model;
 	private JFrame frame;
 	private JPanel btnPanel;
 	private JButton btnRefrigerator;
@@ -36,7 +33,7 @@ public class FreshmartMain implements CreateNotify {
 	private JTable table;
 	private JButton btnRecipe;
 	private JLabel lblFreshmartVer;
-	
+
 	private FreshmartDao freshmartDao;
 
 	/**
@@ -70,85 +67,82 @@ public class FreshmartMain implements CreateNotify {
 		frame.setBounds(100, 100, 439, 599);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		
+
 		frame.setTitle("FreshMart");
 
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
 
 		frame.setIconImage(img);
-		
+
 		btnPanel = new JPanel();
 		btnPanel.setBounds(0, 0, 423, 560);
 		frame.getContentPane().add(btnPanel);
 		btnPanel.setLayout(null);
-		
+
 		btnFreezer = new JButton("냉동실");
 		btnFreezer.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnFreezer.setBounds(12, 10, 195, 135);
 		btnPanel.add(btnFreezer);
-		
+
 		btnRefrigerator = new JButton("냉장실");
 		btnRefrigerator.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnRefrigerator.setBounds(216, 10, 195, 135);
 		btnPanel.add(btnRefrigerator);
-		
+
 		btnRefrigeratorStorage = new JButton("보관");
-		btnRefrigeratorStorage.addActionListener(e -> 
-		RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame, FreshmartMain.this));
-		
+		btnRefrigeratorStorage.addActionListener(
+				e -> RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame, FreshmartMain.this));
+
 		btnRefrigeratorStorage.setFont(new Font("맑은 고딕", Font.BOLD, 20));
 		btnRefrigeratorStorage.setBounds(12, 155, 399, 135);
 		btnPanel.add(btnRefrigeratorStorage);
-		
+
 		btnTodayWhatIeat = new JButton("오늘 뭐 먹지?");
 		btnTodayWhatIeat.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnTodayWhatIeat.setBounds(12, 300, 195, 250);
 		btnPanel.add(btnTodayWhatIeat);
-		
+
 		btnShare = new JButton("식재료 공유");
 		btnShare.setFont(new Font("맑은 고딕", Font.BOLD, 14));
 		btnShare.setBounds(216, 390, 195, 48);
 		btnPanel.add(btnShare);
-		
+
 		btnRecipe = new JButton("레시피 커뮤니티");
 		btnRecipe.setFont(new Font("맑은 고딕", Font.BOLD, 14));
 		btnRecipe.setBounds(216, 450, 195, 48);
 		btnPanel.add(btnRecipe);
-		
+
 		lblFreshmartVer = new JLabel("FreshMart Ver 1.0");
 		lblFreshmartVer.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFreshmartVer.setFont(new Font("D2Coding", Font.BOLD | Font.ITALIC, 14));
 		lblFreshmartVer.setBounds(216, 508, 195, 42);
 		btnPanel.add(lblFreshmartVer);
 	}
-	
-	   private void initializeTable() {
-	        List<Freshmart> list = freshmartDao.read();
-	        resetTableModel(list);
-	    }
-	    
-	   private void resetTableModel(List<Freshmart> list) {
-		    model = new DefaultTableModel(null, COLUMN_NAMES);
 
-		    for (Freshmart f : list) {
-		        Object[] rowData = {
-		            f.getIMG(), 
-		            f.getStorage(), 
-		            f.getFoodname(), 
-		            f.getFoodquantity(), 
-		            f.getExpirationdate()
-		        };
-		        model.addRow(rowData);
-		    }
+	private void initializeTable() {
+		List<Freshmart> list = freshmartDao.read();
+		resetTableModel(list);
+	}
 
-		    table.setModel(model);
+	private void resetTableModel(List<Freshmart> list) {
+		model = new DefaultTableModel(null, COLUMN_NAMES);
+
+		for (Freshmart f : list) {
+			Object[] rowData = { f.getIMG(), f.getFoodname(), f.getStorage(), f.getTypeid(), f.getExpirationdate(),
+					f.getFoodquantity(),
+
+			};
+			model.addRow(rowData);
 		}
-	   
-	   // List<Freshmart> freezerItems = FreshmartDao.INSTANCE.readByStorage("냉동실");
-	   
-	   @Override
-	    public void notifyCreateSuccess() {
-	        initializeTable();
-	    }
+
+		table.setModel(model);
+	}
+
+	// List<Freshmart> freezerItems = FreshmartDao.INSTANCE.readByStorage("냉동실");
+
+	@Override
+	public void notifyCreateSuccess() {
+		initializeTable();
+	}
 }
