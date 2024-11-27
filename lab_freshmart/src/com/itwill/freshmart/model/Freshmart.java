@@ -22,7 +22,7 @@ public class Freshmart {
 	private LocalDate expirationdate;
 	private String storage;
 	private Integer foodquantity;
-	private String IMG;
+	private String img;
 
 	public Freshmart(Integer id, Integer typeid, String foodname, LocalDate expirationdate, String storage,
 			Integer foodquantity, String iMG) {
@@ -32,7 +32,7 @@ public class Freshmart {
 		this.expirationdate = expirationdate;
 		this.storage = storage;
 		this.foodquantity = foodquantity;
-		this.IMG = iMG;
+		this.img = iMG;
 	}
 
 	public Integer getTypeid() {
@@ -76,11 +76,11 @@ public class Freshmart {
 	}
 
 	public String getIMG() {
-		return IMG;
+		return img;
 	}
 
 	public void setIMG(String iMG) {
-		IMG = iMG;
+		img = iMG;
 	}
 
 	public Integer getId() {
@@ -90,7 +90,7 @@ public class Freshmart {
 	@Override
 	public String toString() {
 		return "Freshmart [ id= " + id + ", typeid= " + typeid + ", foodname= " + foodname + ", expirationdate= "
-				+ expirationdate + ", storage= " + storage + ", foodquantity= " + foodquantity + ", IMG= " + IMG + " ]";
+				+ expirationdate + ", storage= " + storage + ", foodquantity= " + foodquantity + ", IMG= " + img + " ]";
 	}
 	
 	public static FreshmartBuilder builder() {
