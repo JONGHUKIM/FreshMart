@@ -9,11 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableModel;
-
-import com.itwill.freshmart.controller.FreshmartDao;
 
 public class FreshmartMain {
 
