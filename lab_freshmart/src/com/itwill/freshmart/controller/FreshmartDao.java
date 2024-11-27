@@ -116,7 +116,7 @@ public enum FreshmartDao {
 	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 	         PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-	        pstmt.setString(1, storageType);  // 파라미터로 받은 storageType을 설정
+	        pstmt.setString(1, storageType);
 	        
 	        try (ResultSet rs = pstmt.executeQuery()) {
 	            while (rs.next()) {
