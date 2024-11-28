@@ -71,12 +71,12 @@ public class FreshmartMain {
 		frame.getContentPane().add(btnPanel);
 		btnPanel.setLayout(null);
 
-		btnFreezer = new JButton("냉동실");
+		btnFreezer = new JButton("냉동실 보기");
 		btnFreezer.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnFreezer.setBounds(12, 10, 195, 135);
 		btnPanel.add(btnFreezer);
 
-		btnRefrigerator = new JButton("냉장실");
+		btnRefrigerator = new JButton("냉장실 보기");
 		btnRefrigerator.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnRefrigerator.setBounds(216, 10, 195, 135);
 		btnPanel.add(btnRefrigerator);

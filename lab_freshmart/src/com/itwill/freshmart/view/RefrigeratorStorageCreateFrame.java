@@ -221,12 +221,12 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 		try {
 
 			if (expirationDateStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
 			DateTimeFormatter[] formatters = { DateTimeFormatter.ofPattern("yyyyMMdd"),
-					DateTimeFormatter.ofPattern("yyyy-MM-dd"), DateTimeFormatter.ofPattern("yyyy/MM/dd") };
+					DateTimeFormatter.ofPattern("yyyy-MM-dd"), DateTimeFormatter.ofPattern("yyyy/MM/dd"), DateTimeFormatter.ofPattern("yyyy.MM.dd") };
 
 			LocalDate expirationDate = null;
 
@@ -240,7 +240,7 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 			}
 
 			if (expirationDate == null) {
-				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
