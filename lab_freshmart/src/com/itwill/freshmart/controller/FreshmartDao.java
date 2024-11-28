@@ -436,4 +436,28 @@ public enum FreshmartDao {
 
 			    return resultList;
 			}
+		 
+		 public List<Freshmart> readByExpirationDateAsc(String storage) {
+			    String sql = String.format(
+			        "SELECT * FROM %s WHERE %s = ? ORDER BY %s Asc",
+			        TBL_FRESHMART,
+			        COL_STORAGE,
+			        COL_EXPIRATION_DATE
+			    );
+			    List<Freshmart> resultList = new ArrayList<>();
+
+			    try (Connection conn = getConnection();
+			         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			        pstmt.setString(1, storage);
+			        ResultSet rs = pstmt.executeQuery();
+
+			        while (rs.next()) {
+			            resultList.add(getFreshmartFromResultSet(rs));
+			        }
+			    } catch (SQLException e) {
+			        e.printStackTrace();
+			    }
+
+			    return resultList;
+			}
 }
