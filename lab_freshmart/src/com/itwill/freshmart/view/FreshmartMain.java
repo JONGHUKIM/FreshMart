@@ -10,9 +10,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FreshmartMain {
-
 
 	private JFrame frame;
 	private JPanel btnPanel;
@@ -23,8 +24,7 @@ public class FreshmartMain {
 	private JButton btnShare;
 	private JButton btnRecipe;
 	private JLabel lblFreshmartVer;
-
-
+	private JButton btnExit;
 
 	/**
 	 * Launch the application.
@@ -75,6 +75,16 @@ public class FreshmartMain {
 		btnFreezer.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnFreezer.setBounds(12, 10, 195, 135);
 		btnPanel.add(btnFreezer);
+		btnFreezer.addActionListener(e -> {
+			RefrigeratorStorageCreateFrame refrigeratorStorageCreateFrame = new RefrigeratorStorageCreateFrame(frame);
+			FreezerStorage.showFreezerStorage(frame, refrigeratorStorageCreateFrame,
+					new FreezerStorage.FreezerNotify() {
+						@Override
+						public void notifyUpdateSuccess() {
+							System.out.println("Update successful!");
+						}
+					});
+		});
 
 		btnRefrigerator = new JButton("냉장실 보기");
 		btnRefrigerator.setFont(new Font("맑은 고딕", Font.BOLD, 15));
@@ -82,8 +92,8 @@ public class FreshmartMain {
 		btnPanel.add(btnRefrigerator);
 
 		btnRefrigeratorStorage = new JButton("보관");
-		btnRefrigeratorStorage.addActionListener(
-				e -> RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame));
+		btnRefrigeratorStorage
+				.addActionListener(e -> RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame));
 
 		btnRefrigeratorStorage.setFont(new Font("맑은 고딕", Font.BOLD, 20));
 		btnRefrigeratorStorage.setBounds(12, 155, 399, 135);
@@ -96,46 +106,29 @@ public class FreshmartMain {
 
 		btnShare = new JButton("식재료 공유");
 		btnShare.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-		btnShare.setBounds(216, 390, 195, 48);
+		btnShare.setBounds(216, 300, 195, 48);
 		btnPanel.add(btnShare);
 
 		btnRecipe = new JButton("레시피 커뮤니티");
 		btnRecipe.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-		btnRecipe.setBounds(216, 450, 195, 48);
+		btnRecipe.setBounds(216, 360, 195, 48);
 		btnPanel.add(btnRecipe);
 
 		lblFreshmartVer = new JLabel("FreshMart Ver 1.0");
 		lblFreshmartVer.setHorizontalAlignment(SwingConstants.CENTER);
 		lblFreshmartVer.setFont(new Font("D2Coding", Font.BOLD | Font.ITALIC, 14));
-		lblFreshmartVer.setBounds(216, 508, 195, 42);
+		lblFreshmartVer.setBounds(216, 418, 195, 74);
 		btnPanel.add(lblFreshmartVer);
+
+		btnExit = new JButton("종료");
+		btnExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose();
+			}
+		});
+		btnExit.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+		btnExit.setBounds(216, 502, 195, 48);
+		btnPanel.add(btnExit);
 	}
 
-/*
-private void initializeTable() {
- List<Freshmart> list = freshmartDao.read();
-resetTableModel(list);
 }
-
-	private void resetTableModel(List<Freshmart> list) {
-		model = new DefaultTableModel(null, COLUMN_NAMES);
-
-		for (Freshmart f : list) {
-			Object[] rowData = { f.getIMG(), f.getFoodname(), f.getTypeid(), f.getFoodquantity(), f.getExpirationdate()
-
-			};
-			model.addRow(rowData);
-		}
-
-		table.setModel(model);
-	}
-
- List<Freshmart> freezerItems = FreshmartDao.INSTANCE.readByStorage("냉동실");
-
-@Override
-public void notifyCreateSuccess() {
-initializeTable();
-}
-*/
-}
-

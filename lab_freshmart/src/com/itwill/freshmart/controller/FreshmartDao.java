@@ -277,5 +277,56 @@ public enum FreshmartDao {
 
 		return result;
 	}
+	
+	public String getFoodCategoryNameById(Integer typeId) {
+	    String categoryName = null;
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
 
+	    try {
+	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	        String sql = "SELECT CATEGORY FROM FOOD_CATEGORY WHERE ID = ?";
+	        stmt = conn.prepareStatement(sql);
+	        stmt.setInt(1, typeId);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            categoryName = rs.getString("CATEGORY"); 
+	            
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        closeResources(conn, stmt, rs);
+	    }
+
+	    return categoryName;
+	}
+	
+	public String getFoodImagePath(String foodName) {
+	    String imagePath = null;
+	    Connection conn = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	        String query = "SELECT " + COL_IMG + " FROM " + TBL_FRESHMART + " WHERE " + COL_FOOD_NAME + " = ?";
+	        stmt = conn.prepareStatement(query);
+	        stmt.setString(1, foodName);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            imagePath = rs.getString(COL_IMG);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        closeResources(conn, stmt, rs);
+	    }
+
+	    return imagePath;
+	}
 }

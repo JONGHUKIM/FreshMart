@@ -1,5 +1,6 @@
 package com.itwill.freshmart.view;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
@@ -7,16 +8,18 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -32,19 +35,12 @@ public class FreezerStorage extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JTextField foodNameField;
 	private JLabel imageLabel;
-	private JTextField expirationDateField;
-	private JTextField foodQuantityField;
-	private String imagePath;
 	private JLabel lblFoodName;
 	private JLabel lblFoodCategory;
 	private JLabel lblExpirationDate;
 	private JLabel lblFoodQuantity;
-
-	private JComboBox<String> categoryComboBox_1;
 	private JButton btnDetails;
-
 	private Component parentComponent;
 	private FreezerNotify app;
 	private JButton btnUpdate;
@@ -53,167 +49,248 @@ public class FreezerStorage extends JFrame {
 	private JButton btnClose;
 	private JScrollPane scrollPane;
 	private JTable table;
-	
-	private FreshmartDao freshmartDao;
-	private final Integer id;
 
-	public static void showFreezerStorage(Component parentComponent, FreezerNotify app, Integer id) {
-	    EventQueue.invokeLater(() -> {
-	        try {
-	            FreezerStorage frame = new FreezerStorage(parentComponent, app, id);
-	            frame.setVisible(true);
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    });
+	private JLabel foodNameLabel; // 식품 이름 레이블 추가
+	private JLabel foodQuantityLabel; // 식품 개수 레이블 추가
+	private JLabel expirationDateLabel; // 유통 기한 레이블 추가
+
+	private FreshmartDao freshmartDao;
+
+	public static void showFreezerStorage(Component parentComponent,
+			RefrigeratorStorageCreateFrame refrigeratorStorageCreateFrame, FreezerNotify app) {
+		EventQueue.invokeLater(() -> {
+			try {
+				FreezerStorage frame = new FreezerStorage(parentComponent, refrigeratorStorageCreateFrame, app);
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
-	private FreezerStorage(Component parentComponent, FreezerNotify app, Integer id) {
-
+	public FreezerStorage(Component parentComponent, RefrigeratorStorageCreateFrame refrigeratorStorageCreateFrame,
+			FreezerNotify app) {
 		this.freshmartDao = FreshmartDao.INSTANCE;
-		this.parentComponent = parentComponent;
 		this.app = app;
-		this.id = id;
+		this.parentComponent = parentComponent;
 		initialize();
 		initializeTable();
+		setLocationRelativeTo(parentComponent);
 	}
 
 	public void initialize() {
-		
-		
-		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		
+
 		setTitle("냉동실");
 
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
-
 		this.setIconImage(img);
 
-		setSize(480, 567);
+		setSize(492, 567);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
+
 		setLocationRelativeTo(parentComponent);
 		contentPane.setLayout(null);
-		
 
 		lblFoodName = new JLabel("식품 이름:");
-		lblFoodName.setBounds(237, 10, 80, 20);
+		lblFoodName.setBounds(237, 20, 80, 20);
 		lblFoodName.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		contentPane.add(lblFoodName);
 
-		foodNameField = new JTextField();
-		foodNameField.setBounds(317, 10, 131, 25);
-		foodNameField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		contentPane.add(foodNameField);
-		foodNameField.setColumns(10);
-
-		lblFoodCategory = new JLabel("식품 유형:");
-		lblFoodCategory.setBounds(237, 40, 80, 20);
-		lblFoodCategory.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		contentPane.add(lblFoodCategory);
-
-		categoryComboBox_1 = new JComboBox<>();
-		categoryComboBox_1.setBounds(317, 40, 131, 25);
-		categoryComboBox_1.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		contentPane.add(categoryComboBox_1);
-
-		List<String> foodCategories = FreshmartDao.INSTANCE.getFoodCategoryList();
-		for (String category : foodCategories) {
-			categoryComboBox_1.addItem(category);
-		}
+		foodNameLabel = new JLabel();
+		foodNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		foodNameLabel.setBounds(317, 20, 131, 25);
+		foodNameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		contentPane.add(foodNameLabel);
 
 		lblExpirationDate = new JLabel("유통 기한");
-		lblExpirationDate.setBounds(296, 100, 80, 20);
+		lblExpirationDate.setBounds(314, 123, 80, 20);
 		lblExpirationDate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		contentPane.add(lblExpirationDate);
 
-		expirationDateField = new JTextField();
-		expirationDateField.setBounds(237, 130, 211, 129);
-		expirationDateField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		contentPane.add(expirationDateField);
-		expirationDateField.setColumns(10);
+		expirationDateLabel = new JLabel();
+		expirationDateLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		expirationDateLabel.setBounds(244, 153, 211, 60);
+		expirationDateLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+		contentPane.add(expirationDateLabel);
 
 		lblFoodQuantity = new JLabel("식품 개수:");
-		lblFoodQuantity.setBounds(237, 70, 80, 20);
+		lblFoodQuantity.setBounds(237, 90, 80, 20);
 		lblFoodQuantity.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		contentPane.add(lblFoodQuantity);
 
-		foodQuantityField = new JTextField();
-		foodQuantityField.setBounds(317, 70, 131, 25);
-		foodQuantityField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		contentPane.add(foodQuantityField);
-		foodQuantityField.setColumns(10);
+		foodQuantityLabel = new JLabel();
+		foodQuantityLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		foodQuantityLabel.setBounds(317, 88, 131, 25);
+		foodQuantityLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		contentPane.add(foodQuantityLabel);
+
+		lblFoodCategory = new JLabel("식품 유형:");
+		lblFoodCategory.setBounds(237, 55, 80, 20);
+		lblFoodCategory.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		contentPane.add(lblFoodCategory);
+
+		JLabel categoryLabel = new JLabel();
+		categoryLabel.setHorizontalAlignment(SwingConstants.CENTER);
+		categoryLabel.setBounds(317, 55, 131, 25);
+		categoryLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		contentPane.add(categoryLabel);
 
 		imageLabel = new JLabel("이미지가 선택되지 않았습니다.");
-		imageLabel.setBounds(12, 10, 212, 249);
+		imageLabel.setBounds(20, 10, 212, 249);
 		imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(imageLabel);
 
-		btnDetails = new JButton("상세");
-		btnDetails.setBounds(0, 488, 80, 30);
-		btnDetails.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnDetails.addActionListener(e -> {
-			dispose();
-		});
-		contentPane.add(btnDetails);
-		
-		btnUpdate = new JButton("수정");
-		btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnUpdate.setBounds(92, 488, 80, 30);
-		contentPane.add(btnUpdate);
-		
-		btnDelete = new JButton("삭제");
-		btnDelete.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnDelete.setBounds(184, 488, 80, 30);
-		contentPane.add(btnDelete);
-		
-		btnList = new JButton("정렬");
-		btnList.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnList.setBounds(276, 488, 80, 30);
-		contentPane.add(btnList);
-		
-		btnClose = new JButton("닫기");
-		btnClose.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				dispose();
+		List<Freshmart> list = freshmartDao.readByStorage("냉동실");
+		if (!list.isEmpty()) {
+			Freshmart firstItem = list.get(0);
+			foodNameLabel.setText(firstItem.getFoodname());
+
+			String categoryName = freshmartDao.getFoodCategoryNameById(firstItem.getTypeid());
+			categoryLabel.setText(categoryName);
+
+			foodQuantityLabel.setText(String.valueOf(firstItem.getFoodquantity()));
+
+			LocalDate expirationDate = firstItem.getExpirationdate();
+			LocalDate currentDate = LocalDate.now();
+
+			long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
+
+			String formattedExpirationDate = expirationDate.toString();
+
+			if (daysRemaining > 0) {
+				expirationDateLabel.setText(formattedExpirationDate + " / " + daysRemaining + "일 남음");
+				if (daysRemaining <= 5) {
+					expirationDateLabel.setForeground(Color.RED);
+				} else {
+					expirationDateLabel.setForeground(Color.BLACK);
+				}
+			} else if (daysRemaining == 0) {
+				expirationDateLabel.setText(formattedExpirationDate + " / 오늘 만료!");
+				expirationDateLabel.setForeground(Color.RED);
+				JOptionPane.showMessageDialog(FreezerStorage.this, "유통기한은 오늘이 마지막날입니다!", "경고", JOptionPane.WARNING_MESSAGE);
+			} else {
+				expirationDateLabel.setText(formattedExpirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
+				expirationDateLabel.setForeground(Color.RED);
 			}
-		});
-		btnClose.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnClose.setBounds(368, 488, 80, 30);
-		contentPane.add(btnClose);
-		
-		scrollPane = new JScrollPane();
-		scrollPane.setBounds(12, 269, 436, 209);
-		contentPane.add(scrollPane);
-		
-		table = new JTable();
-		scrollPane.setViewportView(table);
+
+			btnDetails = new JButton("상세");
+			btnDetails.setBounds(20, 488, 80, 30);
+			btnDetails.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+			contentPane.add(btnDetails);
+
+			btnDetails.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					int selectedRow = table.getSelectedRow();
+
+					if (selectedRow != -1) {
+						String foodName = (String) table.getValueAt(selectedRow, 0);
+
+						Object foodCategoryObj = table.getValueAt(selectedRow, 1);
+						String foodCategory = foodCategoryObj instanceof Integer
+								? ((Integer) foodCategoryObj).toString()
+								: (String) foodCategoryObj;
+
+						Integer foodQuantity = (Integer) table.getValueAt(selectedRow, 2);
+						String foodQuantityStr = foodQuantity != null ? foodQuantity.toString() : "N/A";
+						LocalDate expirationDate = (LocalDate) table.getValueAt(selectedRow, 3);
+						foodNameLabel.setText(foodName);
+						foodQuantityLabel.setText(foodQuantityStr);
+						expirationDateLabel.setText(expirationDate.toString());
+
+						LocalDate currentDate = LocalDate.now();
+						long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
+
+						if (daysRemaining > 0) {
+							expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");
+							if (daysRemaining <= 5) {
+								expirationDateLabel.setForeground(Color.RED);
+							} else {
+								expirationDateLabel.setForeground(Color.BLACK);
+							}
+						} else if (daysRemaining == 0) {
+							expirationDateLabel.setText(expirationDate + " / 오늘 만료!");
+							expirationDateLabel.setForeground(Color.RED);
+							JOptionPane.showMessageDialog(FreezerStorage.this, "유통기한은 오늘이 마지막날입니다!", "경고",
+									JOptionPane.WARNING_MESSAGE);
+						} else {
+							expirationDateLabel.setText(expirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
+							expirationDateLabel.setForeground(Color.RED);
+						}
+
+						String imagePath = freshmartDao.getFoodImagePath(foodName);
+						if (imagePath != null && !imagePath.isEmpty()) {
+							ImageIcon imageIcon = new ImageIcon(imagePath);
+							Image image = imageIcon.getImage();
+							Image scaledImage = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(),
+									Image.SCALE_SMOOTH);
+							imageLabel.setIcon(new ImageIcon(scaledImage));
+							imageLabel.setText("");
+						} else {
+							imageLabel.setIcon(null);
+							imageLabel.setText("이미지가 없습니다.");
+						}
+
+					} else {
+						JOptionPane.showMessageDialog(FreezerStorage.this, "행을 선택하세요", "경고", JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			});
+
+			btnUpdate = new JButton("수정");
+			btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+			btnUpdate.setBounds(112, 488, 80, 30);
+			contentPane.add(btnUpdate);
+
+			btnDelete = new JButton("삭제");
+			btnDelete.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+			btnDelete.setBounds(204, 488, 80, 30);
+			contentPane.add(btnDelete);
+
+			btnList = new JButton("정렬");
+			btnList.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+			btnList.setBounds(296, 488, 80, 30);
+			contentPane.add(btnList);
+
+			btnClose = new JButton("닫기");
+			btnClose.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			btnClose.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+			btnClose.setBounds(384, 488, 80, 30);
+			contentPane.add(btnClose);
+
+			scrollPane = new JScrollPane();
+			scrollPane.setBounds(22, 269, 436, 209);
+			contentPane.add(scrollPane);
+
+			table = new JTable();
+			scrollPane.setViewportView(table);
+		}
 	}
 
+	private static final String[] COLUMN_NAMES = { "식품 이름", "식품 유형", "개수", "유통기한" };
 
+	private void initializeTable() {
+		List<Freshmart> list = FreshmartDao.INSTANCE.readByStorage("냉동실");
+		resetTableModel(list);
+	}
 
-private static final String[] COLUMN_NAMES = { "식품 이름", "식품 유형", "개수", "유통기한" };
+	private void resetTableModel(List<Freshmart> list) {
+		DefaultTableModel model = new DefaultTableModel(null, COLUMN_NAMES);
 
-private void initializeTable() {
-    List<Freshmart> list = FreshmartDao.INSTANCE.readByStorage("냉동실");
-    resetTableModel(list);
-}
+		for (Freshmart f : list) {
+			Object[] rowData = { f.getFoodname(), f.getTypeid(), f.getFoodquantity(), f.getExpirationdate() };
+			model.addRow(rowData);
+		}
 
-private void resetTableModel(List<Freshmart> list) {
-    DefaultTableModel model = new DefaultTableModel(null, COLUMN_NAMES);
-
-    for (Freshmart f : list) {
-        Object[] rowData = { f.getFoodname(), f.getTypeid(), f.getFoodquantity(), f.getExpirationdate() };
-        model.addRow(rowData);
-    }
-
-    table.setModel(model);
-}
-
+		table.setModel(model);
+	}
 
 }

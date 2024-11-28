@@ -62,7 +62,7 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 		});
 	}
 
-	private RefrigeratorStorageCreateFrame(Component parentComponent) {
+	public RefrigeratorStorageCreateFrame(Component parentComponent) {
 
 		this.parentComponent = parentComponent;
 		initialize();
@@ -241,11 +241,6 @@ public class RefrigeratorStorageCreateFrame extends JFrame {
 
 			if (expirationDate == null) {
 				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG", JOptionPane.WARNING_MESSAGE);
-				return;
-			}
-
-			if (expirationDate.isBefore(LocalDate.now())) {
-				JOptionPane.showMessageDialog(this, "올바른 유통기한을 입력하세요.", "WARNIG", JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
