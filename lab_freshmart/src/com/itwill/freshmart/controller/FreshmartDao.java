@@ -439,7 +439,7 @@ public enum FreshmartDao {
 		 
 		 public List<Freshmart> readByExpirationDateAsc(String storage) {
 			    String sql = String.format(
-			        "SELECT * FROM %s WHERE %s = ? ORDER BY %s Asc",
+			        "SELECT * FROM %s WHERE %s = ? ORDER BY %s asc",
 			        TBL_FRESHMART,
 			        COL_STORAGE,
 			        COL_EXPIRATION_DATE

@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -49,6 +50,7 @@ public class FreezerStorage extends JFrame {
 	private JButton btnClose;
 	private JScrollPane scrollPane;
 	private JTable table;
+	private ButtonGroup buttonGroup;
 
 	private JLabel foodNameLabel;
 	private JLabel foodQuantityLabel;
@@ -212,12 +214,6 @@ public class FreezerStorage extends JFrame {
 		contentPane.add(btnDelete);
 
 		btnList = new JButton("정렬");
-		btnList.addActionListener(new ActionListener() {
-		    public void actionPerformed(ActionEvent e) {
-		        String selectedStorage = "냉동실";
-		        ExpirationDateBydesc(selectedStorage);
-		    }
-		});
 		btnList.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnList.setBounds(224, 499, 80, 30);
 		contentPane.add(btnList);
@@ -240,74 +236,91 @@ public class FreezerStorage extends JFrame {
 		scrollPane.setViewportView(table);
 		Font tableFont = new Font("맑은 고딕", Font.BOLD, 14);
 		table.setFont(tableFont);
-		
+
 		rdbtnAsc = new JRadioButton("Asc");
 		rdbtnAsc.setBounds(311, 495, 61, 20);
 		contentPane.add(rdbtnAsc);
-		
+
 		rdbtnDesc = new JRadioButton("Desc");
 		rdbtnDesc.setBounds(311, 514, 64, 19);
 		contentPane.add(rdbtnDesc);
 
+		buttonGroup = new ButtonGroup();
+		buttonGroup.add(rdbtnAsc);
+		buttonGroup.add(rdbtnDesc);
+
+		rdbtnDesc.setSelected(true);
+
+		btnList.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String selectedStorage = "냉동실";
+				if (rdbtnAsc.isSelected()) {
+					ExpirationDateByasc(selectedStorage);
+				} else if (rdbtnDesc.isSelected()) {
+					ExpirationDateBydesc(selectedStorage);
+				}
+			}
+		});
+
 		Font headerFont = new Font("맑은 고딕", Font.BOLD, 16);
 		table.getTableHeader().setFont(headerFont);
 		table.getTableHeader().setBackground(Color.LIGHT_GRAY);
-		
+
 		table.addMouseListener(new java.awt.event.MouseAdapter() {
-		    public void mouseClicked(java.awt.event.MouseEvent evt) {
-		        int selectedRow = table.getSelectedRow();
-		        
-		        if (selectedRow != -1) {
-		            String foodName = (String) table.getValueAt(selectedRow, 0);
-		            Object foodCategoryObj = table.getValueAt(selectedRow, 1);
-		            String foodCategory = foodCategoryObj instanceof Integer ? ((Integer) foodCategoryObj).toString()
-		                    : (String) foodCategoryObj;
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				int selectedRow = table.getSelectedRow();
 
-		            String categoryName = freshmartDao.getFoodCategoryNameById((Integer) foodCategoryObj);
-		            categoryLabel.setText(categoryName);
+				if (selectedRow != -1) {
+					String foodName = (String) table.getValueAt(selectedRow, 0);
+					Object foodCategoryObj = table.getValueAt(selectedRow, 1);
+					String foodCategory = foodCategoryObj instanceof Integer ? ((Integer) foodCategoryObj).toString()
+							: (String) foodCategoryObj;
 
-		            Integer foodQuantity = (Integer) table.getValueAt(selectedRow, 2);
-		            String foodQuantityStr = foodQuantity != null ? foodQuantity.toString() : "N/A";
-		            LocalDate expirationDate = (LocalDate) table.getValueAt(selectedRow, 3);
+					String categoryName = freshmartDao.getFoodCategoryNameById((Integer) foodCategoryObj);
+					categoryLabel.setText(categoryName);
 
-		            foodNameLabel.setText(foodName);
-		            foodQuantityLabel.setText(foodQuantityStr);
-		            expirationDateLabel.setText(expirationDate.toString());
+					Integer foodQuantity = (Integer) table.getValueAt(selectedRow, 2);
+					String foodQuantityStr = foodQuantity != null ? foodQuantity.toString() : "N/A";
+					LocalDate expirationDate = (LocalDate) table.getValueAt(selectedRow, 3);
 
-		            LocalDate currentDate = LocalDate.now();
-		            long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
+					foodNameLabel.setText(foodName);
+					foodQuantityLabel.setText(foodQuantityStr);
+					expirationDateLabel.setText(expirationDate.toString());
 
-		            if (daysRemaining > 0) {
-		                expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");
-		                if (daysRemaining <= 5) {
-		                    expirationDateLabel.setForeground(Color.RED);
-		                } else {
-		                    expirationDateLabel.setForeground(Color.BLACK);
-		                }
-		            } else if (daysRemaining == 0) {
-		                expirationDateLabel.setText(expirationDate + " / 오늘 만료!");
-		                expirationDateLabel.setForeground(Color.RED);
-		                JOptionPane.showMessageDialog(FreezerStorage.this, "유통기한은 오늘이 마지막날입니다!", "경고",
-		                        JOptionPane.WARNING_MESSAGE);
-		            } else {
-		                expirationDateLabel.setText(expirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
-		                expirationDateLabel.setForeground(Color.RED);
-		            }
+					LocalDate currentDate = LocalDate.now();
+					long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
 
-		            String imagePath = freshmartDao.getFoodImagePath(foodName);
-		            if (imagePath != null && !imagePath.isEmpty()) {
-		                ImageIcon imageIcon = new ImageIcon(imagePath);
-		                Image image = imageIcon.getImage();
-		                Image scaledImage = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(),
-		                        Image.SCALE_SMOOTH);
-		                imageLabel.setIcon(new ImageIcon(scaledImage));
-		                imageLabel.setText("");
-		            } else {
-		                imageLabel.setIcon(null);
-		                imageLabel.setText("이미지가 없습니다.");
-		            }
-		        }
-		    }
+					if (daysRemaining > 0) {
+						expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");
+						if (daysRemaining <= 5) {
+							expirationDateLabel.setForeground(Color.RED);
+						} else {
+							expirationDateLabel.setForeground(Color.BLACK);
+						}
+					} else if (daysRemaining == 0) {
+						expirationDateLabel.setText(expirationDate + " / 오늘 만료!");
+						expirationDateLabel.setForeground(Color.RED);
+						JOptionPane.showMessageDialog(FreezerStorage.this, "유통기한은 오늘이 마지막날입니다!", "경고",
+								JOptionPane.WARNING_MESSAGE);
+					} else {
+						expirationDateLabel.setText(expirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
+						expirationDateLabel.setForeground(Color.RED);
+					}
+
+					String imagePath = freshmartDao.getFoodImagePath(foodName);
+					if (imagePath != null && !imagePath.isEmpty()) {
+						ImageIcon imageIcon = new ImageIcon(imagePath);
+						Image image = imageIcon.getImage();
+						Image scaledImage = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(),
+								Image.SCALE_SMOOTH);
+						imageLabel.setIcon(new ImageIcon(scaledImage));
+						imageLabel.setText("");
+					} else {
+						imageLabel.setIcon(null);
+						imageLabel.setText("이미지가 없습니다.");
+					}
+				}
+			}
 		});
 	}
 
@@ -361,25 +374,26 @@ public class FreezerStorage extends JFrame {
 		}
 
 	}
-	
-	private void updateTableByExpirationDate(List<Freshmart> sortedList) {
-	    DefaultTableModel model = (DefaultTableModel) table.getModel();
-	    model.setRowCount(0);
 
-	    for (Freshmart freshmart : sortedList) {
-	        Object[] rowData = new Object[]{
-	            freshmart.getFoodname(),
-	            freshmart.getTypeid(),
-	            freshmart.getFoodquantity(),
-	            freshmart.getExpirationdate(),
-	        };
-	        model.addRow(rowData);
-	    }
+	private void updateTableByExpirationDate(List<Freshmart> sortedList) {
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.setRowCount(0);
+
+		for (Freshmart freshmart : sortedList) {
+			Object[] rowData = new Object[] { freshmart.getFoodname(), freshmart.getTypeid(),
+					freshmart.getFoodquantity(), freshmart.getExpirationdate(), };
+			model.addRow(rowData);
+		}
 	}
-	
+
 	private void ExpirationDateBydesc(String storage) {
-	    List<Freshmart> sortedFreshmartList = FreshmartDao.INSTANCE.readByExpirationDateDesc(storage);
-	    updateTableByExpirationDate(sortedFreshmartList);
+		List<Freshmart> sortedFreshmartList = FreshmartDao.INSTANCE.readByExpirationDateDesc(storage);
+		updateTableByExpirationDate(sortedFreshmartList);
+	}
+
+	private void ExpirationDateByasc(String storage) {
+		List<Freshmart> sortedFreshmartList = FreshmartDao.INSTANCE.readByExpirationDateAsc(storage);
+		updateTableByExpirationDate(sortedFreshmartList);
 	}
 
 }
