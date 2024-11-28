@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.event.AncestorListener;
+import javax.swing.event.AncestorEvent;
 
 public class FreshmartMain {
 
@@ -111,6 +113,7 @@ public class FreshmartMain {
 		btnPanel.add(btnRefrigeratorStorage);
 
 		btnTodayWhatIeat = new JButton("오늘 뭐 먹지?");
+		btnTodayWhatIeat.addActionListener(e -> RecommendFoodFrame.ShowRecommendFoodFrame(frame));
 		btnTodayWhatIeat.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnTodayWhatIeat.setBounds(12, 300, 195, 250);
 		btnPanel.add(btnTodayWhatIeat);
