@@ -371,7 +371,7 @@ public enum FreshmartDao {
 			stmt.setString(6, freshmart.getIMG());
 			stmt.setInt(7, freshmart.getId());
 
-			result = stmt.executeUpdate(); // 수정 성공 시 1을 반환, 실패 시 0을 반환
+			result = stmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
