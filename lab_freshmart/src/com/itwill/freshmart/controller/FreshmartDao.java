@@ -329,4 +329,103 @@ public enum FreshmartDao {
 
 	    return imagePath;
 	}
+	
+	private static final String SQL_UPDATE = String.format(
+		    "UPDATE %s SET %s = ?, %s = ?, %s = TO_DATE(?, 'YYYY-MM-DD'), %s = ?, %s = ?, %s = ? WHERE %s = ?",
+		    TBL_FRESHMART,
+		    COL_TYPE_ID, COL_FOOD_NAME, COL_EXPIRATION_DATE, COL_STORAGE, COL_FOOD_QUANTITY, COL_IMG, COL_ID);
+
+		public int update(Freshmart freshmart) {
+		    int result = 0;
+		    Connection conn = null;
+		    PreparedStatement stmt = null;
+
+		    try {
+		        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+		        stmt = conn.prepareStatement(SQL_UPDATE);
+
+		        stmt.setInt(1, freshmart.getTypeid());
+		        stmt.setString(2, freshmart.getFoodname());
+		        stmt.setString(3, freshmart.getExpirationdate().toString());
+
+		        String storage = freshmart.getStorage();
+		        if ("냉장실".equals(storage)) {
+		            stmt.setString(4, "냉장실");
+		        } else {
+		            stmt.setString(4, "냉동실");
+		        }
+
+		        stmt.setInt(5, freshmart.getFoodquantity());
+
+		        String imagePath = null;
+
+		        if (freshmart.getIMG() != null && !freshmart.getIMG().isEmpty()) {
+		            String uploadPath = "C:\\Users\\MYCOM\\Desktop\\Images\\";
+		            File uploadDir = new File(uploadPath);
+		            if (!uploadDir.exists()) {
+		                uploadDir.mkdirs();
+		            }
+
+		            String fileName = freshmart.getId() + "_" + System.currentTimeMillis() + ".jpg";
+		            imagePath = uploadPath + fileName;
+		            stmt.setString(6, imagePath);
+		        } else {
+		            stmt.setString(6, null);
+		        }
+
+		        stmt.setInt(7, freshmart.getId());
+
+		        conn.setAutoCommit(false);
+		        result = stmt.executeUpdate();
+
+		        if (imagePath != null) {
+		            File imageFile = new File(imagePath);
+		            BufferedImage image;
+
+		            if (freshmart.getIMG() != null && !freshmart.getIMG().isEmpty()) {
+		                File imageFile1 = new File(freshmart.getIMG());
+		                if (imageFile1.exists()) {
+		                    image = ImageIO.read(imageFile1);
+		                } else {
+		                    image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+		                    Graphics2D g2d = image.createGraphics();
+		                    g2d.setColor(Color.WHITE);
+		                    g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+		                    g2d.setColor(Color.BLACK);
+		                    g2d.drawString("기본 이미지", 10, 50);
+		                    g2d.dispose();
+		                }
+		            } else {
+		                image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
+		                Graphics2D g2d = image.createGraphics();
+		                g2d.setColor(Color.WHITE);
+		                g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
+		                g2d.setColor(Color.BLACK);
+		                g2d.drawString("기본 이미지", 10, 50);
+		                g2d.dispose();
+		            }
+
+		            ImageIO.write(image, "jpg", imageFile);
+		        }
+
+		        conn.commit();
+		        result = 1;
+
+		    } catch (SQLException e) {
+		        try {
+		            if (conn != null)
+		                conn.rollback();
+		        } catch (SQLException rollbackEx) {
+		            rollbackEx.printStackTrace();
+		        }
+		        e.printStackTrace();
+		    } catch (IOException e) {
+		        System.err.println("이미지 파일 저장 실패: " + e.getMessage());
+		        e.printStackTrace();
+		    } finally {
+		        closeResources(conn, stmt);
+		    }
+
+		    return result;
+		}
 }
