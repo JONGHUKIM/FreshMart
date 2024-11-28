@@ -174,7 +174,7 @@ public class FreezerStorage extends JFrame {
 			} else if (daysRemaining == 0) {
 				expirationDateLabel.setText(formattedExpirationDate + " / 오늘 만료!");
 				expirationDateLabel.setForeground(Color.RED);
-				JOptionPane.showMessageDialog(FreezerStorage.this, "오늘이 유통기한 마지막인 식품이 있습니다!", "경고",
+				JOptionPane.showMessageDialog(parentComponent, "오늘이 유통기한 마지막인 식품이 있습니다!", "경고",
 						JOptionPane.WARNING_MESSAGE);
 			} else {
 				expirationDateLabel.setText(formattedExpirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
