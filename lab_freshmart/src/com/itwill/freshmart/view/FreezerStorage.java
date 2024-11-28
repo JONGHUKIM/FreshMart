@@ -23,6 +23,8 @@ import javax.swing.border.EmptyBorder;
 import com.itwill.freshmart.controller.FreshmartDao;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class FreezerStorage extends JFrame {
 
@@ -173,6 +175,11 @@ public class FreezerStorage extends JFrame {
 		contentPane.add(btnList);
 		
 		btnClose = new JButton("닫기");
+		btnClose.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
 		btnClose.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnClose.setBounds(368, 488, 80, 30);
 		contentPane.add(btnClose);
