@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -45,10 +46,10 @@ public enum FreshmartDao {
 			e.printStackTrace();
 		}
 	}
-	
-	 private Connection getConnection() throws SQLException {
-	        return DriverManager.getConnection(URL, USER, PASSWORD);
-	    }
+
+	private Connection getConnection() throws SQLException {
+		return DriverManager.getConnection(URL, USER, PASSWORD);
+	}
 
 	private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
 		try {
@@ -80,32 +81,29 @@ public enum FreshmartDao {
 				.storage(storage).foodquantity(foodquantity).img(img).build();
 
 	}
-	
 
-	 private static final String SQL_DELETE_BY_ID = String.format(
-	            "delete from %s where %s = ?", 
-	            TBL_FRESHMART, COL_ID);
-	 
-	 public int delete(Integer id) {
-	        int result = 0;
-	        
-	        Connection conn = null;
-	        PreparedStatement stmt = null;
-	        try {
-	            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	            stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
-	            stmt.setInt(1, id);
-	            result = stmt.executeUpdate();
-	            
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        } finally {
-	            closeResources(conn, stmt);
-	        }
-	        
-	        return result;
-	    }
-	
+	private static final String SQL_DELETE_BY_ID = String.format("delete from %s where %s = ?", TBL_FRESHMART, COL_ID);
+
+	public int delete(Integer id) {
+		int result = 0;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
+			stmt.setInt(1, id);
+			result = stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt);
+		}
+
+		return result;
+	}
+
 	private static final String SQL_SELECT_ALL = String.format("select * from %s order by %s desc", TBL_FRESHMART,
 			COL_ID);
 
@@ -136,27 +134,26 @@ public enum FreshmartDao {
 
 		return blogs;
 	}
-	
+
 	public List<Freshmart> readByStorage(String storageType) {
-	    List<Freshmart> resultList = new ArrayList<>();
-	    String query = "SELECT * FROM " + TBL_FRESHMART + " WHERE " + COL_STORAGE + " = ?";
+		List<Freshmart> resultList = new ArrayList<>();
+		String query = "SELECT * FROM " + TBL_FRESHMART + " WHERE " + COL_STORAGE + " = ?";
 
-	    try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	         PreparedStatement pstmt = conn.prepareStatement(query)) {
+		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+				PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-	        pstmt.setString(1, storageType);
-	        
-	        try (ResultSet rs = pstmt.executeQuery()) {
-	            while (rs.next()) {
-	                resultList.add(getFreshmartFromResultSet(rs));
-	            }
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return resultList;
+			pstmt.setString(1, storageType);
+
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					resultList.add(getFreshmartFromResultSet(rs));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return resultList;
 	}
-	
 
 	public List<String> getFoodCategoryList() {
 		List<String> foodCategories = new ArrayList<>();
@@ -305,159 +302,156 @@ public enum FreshmartDao {
 
 		return result;
 	}
-	
+
 	public String getFoodCategoryNameById(Integer typeId) {
-	    String categoryName = null;
-	    Connection conn = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
+		String categoryName = null;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 
-	    try {
-	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	        String sql = "SELECT CATEGORY FROM FOOD_CATEGORY WHERE ID = ?";
-	        stmt = conn.prepareStatement(sql);
-	        stmt.setInt(1, typeId);
-	        rs = stmt.executeQuery();
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			String sql = "SELECT CATEGORY FROM FOOD_CATEGORY WHERE ID = ?";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, typeId);
+			rs = stmt.executeQuery();
 
-	        if (rs.next()) {
-	            categoryName = rs.getString("CATEGORY"); 
-	            
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        closeResources(conn, stmt, rs);
-	    }
+			if (rs.next()) {
+				categoryName = rs.getString("CATEGORY");
 
-	    return categoryName;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return categoryName;
 	}
-	
+
 	public String getFoodImagePath(String foodName) {
-	    String imagePath = null;
-	    Connection conn = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
+		String imagePath = null;
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 
-	    try {
-	        conn = DriverManager.getConnection(URL, USER, PASSWORD);
-	        String query = "SELECT " + COL_IMG + " FROM " + TBL_FRESHMART + " WHERE " + COL_FOOD_NAME + " = ?";
-	        stmt = conn.prepareStatement(query);
-	        stmt.setString(1, foodName);
-	        rs = stmt.executeQuery();
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			String query = "SELECT " + COL_IMG + " FROM " + TBL_FRESHMART + " WHERE " + COL_FOOD_NAME + " = ?";
+			stmt = conn.prepareStatement(query);
+			stmt.setString(1, foodName);
+			rs = stmt.executeQuery();
 
-	        if (rs.next()) {
-	            imagePath = rs.getString(COL_IMG);
-	        }
+			if (rs.next()) {
+				imagePath = rs.getString(COL_IMG);
+			}
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        closeResources(conn, stmt, rs);
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
 
-	    return imagePath;
+		return imagePath;
 	}
-	
+
 	public int update(Freshmart freshmart) {
-	    int result = 0;
-	    String sql = "UPDATE " + Freshmart.Entity.TBL_FRESHMART + " SET "
-	            + Freshmart.Entity.COL_FOOD_NAME + " = ?, "
-	            + Freshmart.Entity.COL_TYPE_ID + " = ?, "
-	            + Freshmart.Entity.COL_EXPIRATION_DATE + " = ?, "
-	            + Freshmart.Entity.COL_STORAGE + " = ?, "
-	            + Freshmart.Entity.COL_FOOD_QUANTITY + " = ?, "
-	            + Freshmart.Entity.COL_IMG + " = ? "
-	            + "WHERE " + Freshmart.Entity.COL_ID + " = ?";
-	    
-	    try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-	        stmt.setString(1, freshmart.getFoodname());
-	        stmt.setInt(2, freshmart.getTypeid());
-	        stmt.setDate(3, java.sql.Date.valueOf(freshmart.getExpirationdate()));
-	        stmt.setString(4, freshmart.getStorage());
-	        stmt.setInt(5, freshmart.getFoodquantity());
-	        stmt.setString(6, freshmart.getIMG());
-	        stmt.setInt(7, freshmart.getId());
-	        
-	        result = stmt.executeUpdate();  // 수정 성공 시 1을 반환, 실패 시 0을 반환
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    
-	    return result;
+		int result = 0;
+		String sql = "UPDATE " + Freshmart.Entity.TBL_FRESHMART + " SET " + Freshmart.Entity.COL_FOOD_NAME + " = ?, "
+				+ Freshmart.Entity.COL_TYPE_ID + " = ?, " + Freshmart.Entity.COL_EXPIRATION_DATE + " = ?, "
+				+ Freshmart.Entity.COL_STORAGE + " = ?, " + Freshmart.Entity.COL_FOOD_QUANTITY + " = ?, "
+				+ Freshmart.Entity.COL_IMG + " = ? " + "WHERE " + Freshmart.Entity.COL_ID + " = ?";
+
+		try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setString(1, freshmart.getFoodname());
+			stmt.setInt(2, freshmart.getTypeid());
+			stmt.setDate(3, java.sql.Date.valueOf(freshmart.getExpirationdate()));
+			stmt.setString(4, freshmart.getStorage());
+			stmt.setInt(5, freshmart.getFoodquantity());
+			stmt.setString(6, freshmart.getIMG());
+			stmt.setInt(7, freshmart.getId());
+
+			result = stmt.executeUpdate(); // 수정 성공 시 1을 반환, 실패 시 0을 반환
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
-		
-		 public Freshmart getFoodItemById(int foodId) {
-		        Freshmart foodItem = null;
 
-		        String sql = "SELECT * FROM " + Freshmart.Entity.TBL_FRESHMART + " WHERE " + Freshmart.Entity.COL_ID + " = ?";
+	public Freshmart getFoodItemById(int foodId) {
+		Freshmart foodItem = null;
 
-		        try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-		            stmt.setInt(1, foodId);
-		            ResultSet rs = stmt.executeQuery();
+		String sql = "SELECT * FROM " + Freshmart.Entity.TBL_FRESHMART + " WHERE " + Freshmart.Entity.COL_ID + " = ?";
 
-		            if (rs.next()) {
-		                foodItem = Freshmart.builder()
-		                        .id(rs.getInt(Freshmart.Entity.COL_ID))
-		                        .typeid(rs.getInt(Freshmart.Entity.COL_TYPE_ID))
-		                        .foodname(rs.getString(Freshmart.Entity.COL_FOOD_NAME))
-		                        .expirationdate(rs.getDate(Freshmart.Entity.COL_EXPIRATION_DATE).toLocalDate())
-		                        .storage(rs.getString(Freshmart.Entity.COL_STORAGE))
-		                        .foodquantity(rs.getInt(Freshmart.Entity.COL_FOOD_QUANTITY))
-		                        .img(rs.getString(Freshmart.Entity.COL_IMG))
-		                        .build();
-		            }
-		        } catch (SQLException e) {
-		            e.printStackTrace();
-		        }
+		try (Connection conn = getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, foodId);
+			ResultSet rs = stmt.executeQuery();
 
-		        return foodItem;
-		    }
-		 
-		 public List<Freshmart> readByExpirationDateDesc(String storage) {
-			    String sql = String.format(
-			        "SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
-			        TBL_FRESHMART,
-			        COL_STORAGE,
-			        COL_EXPIRATION_DATE
-			    );
-			    List<Freshmart> resultList = new ArrayList<>();
-
-			    try (Connection conn = getConnection();
-			         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			        pstmt.setString(1, storage);
-			        ResultSet rs = pstmt.executeQuery();
-
-			        while (rs.next()) {
-			            resultList.add(getFreshmartFromResultSet(rs));
-			        }
-			    } catch (SQLException e) {
-			        e.printStackTrace();
-			    }
-
-			    return resultList;
+			if (rs.next()) {
+				foodItem = Freshmart.builder().id(rs.getInt(Freshmart.Entity.COL_ID))
+						.typeid(rs.getInt(Freshmart.Entity.COL_TYPE_ID))
+						.foodname(rs.getString(Freshmart.Entity.COL_FOOD_NAME))
+						.expirationdate(rs.getDate(Freshmart.Entity.COL_EXPIRATION_DATE).toLocalDate())
+						.storage(rs.getString(Freshmart.Entity.COL_STORAGE))
+						.foodquantity(rs.getInt(Freshmart.Entity.COL_FOOD_QUANTITY))
+						.img(rs.getString(Freshmart.Entity.COL_IMG)).build();
 			}
-		 
-		 public List<Freshmart> readByExpirationDateAsc(String storage) {
-			    String sql = String.format(
-			        "SELECT * FROM %s WHERE %s = ? ORDER BY %s asc",
-			        TBL_FRESHMART,
-			        COL_STORAGE,
-			        COL_EXPIRATION_DATE
-			    );
-			    List<Freshmart> resultList = new ArrayList<>();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
-			    try (Connection conn = getConnection();
-			         PreparedStatement pstmt = conn.prepareStatement(sql)) {
-			        pstmt.setString(1, storage);
-			        ResultSet rs = pstmt.executeQuery();
+		return foodItem;
+	}
 
-			        while (rs.next()) {
-			            resultList.add(getFreshmartFromResultSet(rs));
-			        }
-			    } catch (SQLException e) {
-			        e.printStackTrace();
-			    }
+	public List<Freshmart> readByExpirationDateDesc(String storage) {
+		String sql = String.format("SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC", TBL_FRESHMART, COL_STORAGE,
+				COL_EXPIRATION_DATE);
+		List<Freshmart> resultList = new ArrayList<>();
 
-			    return resultList;
+		try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, storage);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				resultList.add(getFreshmartFromResultSet(rs));
 			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultList;
+	}
+
+	public List<Freshmart> readByExpirationDateAsc(String storage) {
+		String sql = String.format("SELECT * FROM %s WHERE %s = ? ORDER BY %s asc", TBL_FRESHMART, COL_STORAGE,
+				COL_EXPIRATION_DATE);
+		List<Freshmart> resultList = new ArrayList<>();
+
+		try (Connection conn = getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			pstmt.setString(1, storage);
+			ResultSet rs = pstmt.executeQuery();
+
+			while (rs.next()) {
+				resultList.add(getFreshmartFromResultSet(rs));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return resultList;
+	}
+
+	public Freshmart recommendFood(String storage) {
+
+		List<Freshmart> foodList = readByExpirationDateAsc(storage);
+
+		if (foodList.isEmpty()) {
+			return null;
+		}
+
+		Random rand = new Random();
+		int randomIndex = rand.nextInt(foodList.size());
+		return foodList.get(randomIndex);
+	}
 }
