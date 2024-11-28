@@ -19,13 +19,15 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import com.itwill.freshmart.controller.FreshmartDao;
+import com.itwill.freshmart.model.Freshmart;
 
 public class FreezerStorage extends JFrame {
 
 	public interface FreezerNotify {
-		void notifyCreateSuccess();
+		void notifyUpdateSuccess();
 	}
 
 	private static final long serialVersionUID = 1L;
@@ -51,23 +53,29 @@ public class FreezerStorage extends JFrame {
 	private JButton btnClose;
 	private JScrollPane scrollPane;
 	private JTable table;
+	
+	private FreshmartDao freshmartDao;
+	private final Integer id;
 
-	public static void showFreezerStorage(Component parentComponent, FreezerNotify app) {
-		EventQueue.invokeLater(() -> {
-			try {
-				FreezerStorage frame = new FreezerStorage(parentComponent, app);
-				frame.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+	public static void showFreezerStorage(Component parentComponent, FreezerNotify app, Integer id) {
+	    EventQueue.invokeLater(() -> {
+	        try {
+	            FreezerStorage frame = new FreezerStorage(parentComponent, app, id);
+	            frame.setVisible(true);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    });
 	}
 
-	private FreezerStorage(Component parentComponent, FreezerNotify app) {
+	private FreezerStorage(Component parentComponent, FreezerNotify app, Integer id) {
 
+		this.freshmartDao = FreshmartDao.INSTANCE;
 		this.parentComponent = parentComponent;
 		this.app = app;
+		this.id = id;
 		initialize();
+		initializeTable();
 	}
 
 	public void initialize() {
@@ -87,7 +95,6 @@ public class FreezerStorage extends JFrame {
 
 		setSize(480, 567);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		// setBounds(100, 100, 482, 308);
 		
 		setLocationRelativeTo(parentComponent);
 		contentPane.setLayout(null);
@@ -187,4 +194,26 @@ public class FreezerStorage extends JFrame {
 		table = new JTable();
 		scrollPane.setViewportView(table);
 	}
+
+
+
+private static final String[] COLUMN_NAMES = { "식품 이름", "식품 유형", "개수", "유통기한" };
+
+private void initializeTable() {
+    List<Freshmart> list = FreshmartDao.INSTANCE.readByStorage("냉동실");
+    resetTableModel(list);
+}
+
+private void resetTableModel(List<Freshmart> list) {
+    DefaultTableModel model = new DefaultTableModel(null, COLUMN_NAMES);
+
+    for (Freshmart f : list) {
+        Object[] rowData = { f.getFoodname(), f.getTypeid(), f.getFoodquantity(), f.getExpirationdate() };
+        model.addRow(rowData);
+    }
+
+    table.setModel(model);
+}
+
+
 }
