@@ -87,6 +87,16 @@ public class FreshmartMain {
 		});
 
 		btnRefrigerator = new JButton("냉장실 보기");
+		btnRefrigerator.addActionListener(e -> {
+			RefrigeratorStorageCreateFrame refrigeratorStorageCreateFrame = new RefrigeratorStorageCreateFrame(frame);
+			RefrigeratorStorage.showRefrigeratorStorage(frame, refrigeratorStorageCreateFrame,
+					new RefrigeratorStorage.RefrigeratorStorageNotify() {
+						@Override
+						public void notifyUpdateSuccess() {
+							System.out.println("Update successful!");
+						}
+					});
+		});
 		btnRefrigerator.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnRefrigerator.setBounds(216, 10, 195, 135);
 		btnPanel.add(btnRefrigerator);
