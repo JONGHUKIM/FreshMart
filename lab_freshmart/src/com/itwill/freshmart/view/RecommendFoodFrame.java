@@ -84,7 +84,7 @@ public class RecommendFoodFrame extends JFrame {
 	    Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
 	    this.setIconImage(img);
 
-	    setSize(510, 578);
+	    setSize(510, 368);
 	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
 	    setLocationRelativeTo(parentComponent);
@@ -139,6 +139,11 @@ public class RecommendFoodFrame extends JFrame {
 	    imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 	    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    contentPane.add(imageLabel);
+	    
+        JLabel recipeSuggestionLabel = new JLabel("더 맛있게 먹을 수 있는 레시피가 궁금하다면?");
+        recipeSuggestionLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+        recipeSuggestionLabel.setBounds(20, 248, 435, 20);
+        contentPane.add(recipeSuggestionLabel);
 
 	    Freshmart fridgeFood = freshmartDao.recommendFood("냉장실");
 	    Freshmart freezerFood = freshmartDao.recommendFood("냉동실");
@@ -146,8 +151,14 @@ public class RecommendFoodFrame extends JFrame {
 	    Freshmart recommendedFood = (Math.random() < 0.5) ? fridgeFood : freezerFood;
 
 	    if (recommendedFood != null) {
-	        foodNameLabel.setText(recommendedFood.getFoodname());
+	        String foodName = recommendedFood.getFoodname();
+	        foodNameLabel.setText(foodName);
 
+	        JLabel todayFoodLabel = new JLabel("오늘은 " + foodName + "!!!!");
+	        todayFoodLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
+	        todayFoodLabel.setBounds(20, 220, 450, 30);
+	        contentPane.add(todayFoodLabel);
+	        
 	        String categoryName = freshmartDao.getFoodCategoryNameById(recommendedFood.getTypeid());
 	        categoryLabel.setText(categoryName);
 
@@ -178,13 +189,16 @@ public class RecommendFoodFrame extends JFrame {
 	        String imagePath = recommendedFood.getIMG();
 	        if (imagePath != null && !imagePath.isEmpty()) {
 	            ImageIcon imageIcon = new ImageIcon(imagePath);
-	            Image randomimg = imageIcon.getImage();
-	            Image scaledImg = randomimg.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
+	            Image randimg = imageIcon.getImage();
+	            Image scaledImg = randimg.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
 	            imageIcon = new ImageIcon(scaledImg);
 	            imageLabel.setIcon(imageIcon);
 	        }
+
+
 	    } else {
 	        JOptionPane.showMessageDialog(this, "추천할 수 있는 음식이 없습니다.");
 	    }
+	    
 	}
 }
