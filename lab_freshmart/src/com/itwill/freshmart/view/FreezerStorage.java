@@ -141,7 +141,7 @@ public class FreezerStorage extends JFrame {
 
 		imageLabel = new JLabel("이미지가 선택되지 않았습니다.");
 		imageLabel.setBounds(20, 10, 212, 203);
-		imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(imageLabel);
 
