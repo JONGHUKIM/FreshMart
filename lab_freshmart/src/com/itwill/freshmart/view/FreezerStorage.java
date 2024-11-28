@@ -50,9 +50,9 @@ public class FreezerStorage extends JFrame {
 	private JScrollPane scrollPane;
 	private JTable table;
 
-	private JLabel foodNameLabel; // 식품 이름 레이블 추가
-	private JLabel foodQuantityLabel; // 식품 개수 레이블 추가
-	private JLabel expirationDateLabel; // 유통 기한 레이블 추가
+	private JLabel foodNameLabel;
+	private JLabel foodQuantityLabel;
+	private JLabel expirationDateLabel;
 
 	private FreshmartDao freshmartDao;
 
@@ -140,7 +140,7 @@ public class FreezerStorage extends JFrame {
 		contentPane.add(categoryLabel);
 
 		imageLabel = new JLabel("이미지가 선택되지 않았습니다.");
-		imageLabel.setBounds(20, 10, 212, 249);
+		imageLabel.setBounds(20, 10, 212, 203);
 		imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(imageLabel);
@@ -176,7 +176,7 @@ public class FreezerStorage extends JFrame {
 			} else {
 				expirationDateLabel.setText(formattedExpirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
 				expirationDateLabel.setForeground(Color.RED);
-			}
+			} }
 
 			btnDetails = new JButton("상세");
 			btnDetails.setBounds(20, 488, 80, 30);
@@ -267,12 +267,17 @@ public class FreezerStorage extends JFrame {
 			contentPane.add(btnClose);
 
 			scrollPane = new JScrollPane();
-			scrollPane.setBounds(22, 269, 436, 209);
+			scrollPane.setBounds(30, 223, 436, 255);
 			contentPane.add(scrollPane);
 
 			table = new JTable();
 			scrollPane.setViewportView(table);
-		}
+			Font tableFont = new Font("맑은 고딕", Font.BOLD, 14);
+		    table.setFont(tableFont);
+		    
+		    Font headerFont = new Font("맑은 고딕", Font.BOLD, 16);
+		    table.getTableHeader().setFont(headerFont);
+		    table.getTableHeader().setBackground(Color.LIGHT_GRAY);
 	}
 
 	private static final String[] COLUMN_NAMES = { "식품 이름", "식품 유형", "개수", "유통기한" };
