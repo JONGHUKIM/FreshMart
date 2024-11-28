@@ -91,7 +91,7 @@ public class FreshmartMain {
 		btnRefrigerator.setBounds(216, 10, 195, 135);
 		btnPanel.add(btnRefrigerator);
 
-		btnRefrigeratorStorage = new JButton("보관");
+		btnRefrigeratorStorage = new JButton("보관하기");
 		btnRefrigeratorStorage
 				.addActionListener(e -> RefrigeratorStorageCreateFrame.showRefrigeratorStorageCreateFrame(frame));
 
