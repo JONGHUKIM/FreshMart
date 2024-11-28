@@ -2,6 +2,7 @@ package com.itwill.freshmart.view;
 
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
@@ -19,15 +20,13 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import com.itwill.freshmart.controller.FreshmartDao;
 import com.itwill.freshmart.model.Freshmart;
-import javax.swing.SwingConstants;
-import java.awt.Font;
 
 public class StorageUpdateFrame extends JFrame {
-
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -49,23 +48,49 @@ public class StorageUpdateFrame extends JFrame {
 	private JButton btnCancel;
 
 	private Component parentComponent;
-	
+	private int foodId;
+	private String foodName;
+	private String foodCategory;
+	private Integer foodQuantity;
+	private LocalDate expirationDate;
 
-	public static void showStorageUpdateFrame(Component parentComponent) {
-		EventQueue.invokeLater(() -> {
-			try {
-				StorageUpdateFrame frame = new StorageUpdateFrame(parentComponent);
-				frame.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+	public static void showStorageUpdateFrame(Component parentComponent, int foodId, String foodName, String foodCategory, 
+	        Integer foodQuantity, LocalDate expirationDate, String imagePath) {
+	    EventQueue.invokeLater(() -> {
+	        try {
+	            StorageUpdateFrame frame = new StorageUpdateFrame(parentComponent, foodId, foodName, foodCategory, foodQuantity, expirationDate, imagePath);
+	            frame.setVisible(true);
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    });
 	}
 
-	public StorageUpdateFrame(Component parentComponent) {
+	public StorageUpdateFrame(Component parentComponent, int foodId, String foodName, String foodCategory, 
+	        Integer foodQuantity, LocalDate expirationDate, String imagePath) {
+	    this.parentComponent = parentComponent;
+	    this.foodId = foodId;
+	    this.foodName = foodName;
+	    this.foodCategory = foodCategory;
+	    this.foodQuantity = foodQuantity;
+	    this.expirationDate = expirationDate;
+	    this.imagePath = imagePath;
+	    initialize();
+	    loadFoodData(foodId);
+	}
 
-		this.parentComponent = parentComponent;
-		initialize();
+	private void loadFoodData(int foodId) {
+	    foodNameField.setText(foodName);
+	    storageComboBox.setSelectedItem(foodCategory);
+	    categoryComboBox_1.setSelectedItem(foodCategory);
+	    expirationDateField.setText(expirationDate.toString());
+	    foodQuantityField.setText(String.valueOf(foodQuantity));
+
+	    if (imagePath != null && !imagePath.isEmpty()) {
+	        ImageIcon icon = new ImageIcon(imagePath);
+	        Image image = icon.getImage().getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
+	        imageLabel.setIcon(new ImageIcon(image));
+	    }
 	}
 
 	public void initialize() {
@@ -79,9 +104,9 @@ public class StorageUpdateFrame extends JFrame {
 		setSize(400, 300);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 482, 308);
-		
+
 		setLocationRelativeTo(parentComponent);
-		
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -179,7 +204,13 @@ public class StorageUpdateFrame extends JFrame {
 
 	private void showImageChooser() {
 		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("이미지 파일 선택");
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		fileChooser.addChoosableFileFilter(
+				new javax.swing.filechooser.FileNameExtensionFilter("이미지 파일", "jpg", "png", "gif", "bmp"));
+
 		int result = fileChooser.showOpenDialog(this);
+
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 			imagePath = selectedFile.getAbsolutePath();
@@ -187,7 +218,6 @@ public class StorageUpdateFrame extends JFrame {
 			try {
 
 				ImageIcon originalIcon = new ImageIcon(imagePath);
-
 				int labelWidth = imageLabel.getWidth();
 				int labelHeight = imageLabel.getHeight();
 
@@ -200,7 +230,7 @@ public class StorageUpdateFrame extends JFrame {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(this, "이미지를 불러올 수 없습니다.", "WARNIG", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "이미지를 불러올 수 없습니다.", "경고", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 	}
@@ -221,12 +251,14 @@ public class StorageUpdateFrame extends JFrame {
 		try {
 
 			if (expirationDateStr.isEmpty()) {
-				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG",
+						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
 			DateTimeFormatter[] formatters = { DateTimeFormatter.ofPattern("yyyyMMdd"),
-					DateTimeFormatter.ofPattern("yyyy-MM-dd"), DateTimeFormatter.ofPattern("yyyy/MM/dd"), DateTimeFormatter.ofPattern("yyyy.MM.dd") };
+					DateTimeFormatter.ofPattern("yyyy-MM-dd"), DateTimeFormatter.ofPattern("yyyy/MM/dd"),
+					DateTimeFormatter.ofPattern("yyyy.MM.dd") };
 
 			LocalDate expirationDate = null;
 
@@ -240,7 +272,8 @@ public class StorageUpdateFrame extends JFrame {
 			}
 
 			if (expirationDate == null) {
-				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(this, "올바른 날짜를 입력하세요. (YYYY/MM/DD)", "WARNIG",
+						JOptionPane.WARNING_MESSAGE);
 				return;
 			}
 
@@ -253,9 +286,16 @@ public class StorageUpdateFrame extends JFrame {
 			}
 
 			int typeid = FreshmartDao.INSTANCE.getFoodCategoryIdByName(selectedCategory);
-
-			Freshmart freshmart = Freshmart.builder().typeid(typeid).foodname(foodName).expirationdate(expirationDate)
-					.storage(storage.equals("냉장실") ? "냉장실" : "냉동실").foodquantity(foodQuantity).img(imagePath).build();
+			
+			Freshmart freshmart = Freshmart.builder()
+				    .id(foodId) // foodId를 설정
+				    .typeid(typeid)
+				    .foodname(foodName)
+				    .expirationdate(expirationDate)
+				    .storage(storage.equals("냉장실") ? "냉장실" : "냉동실")
+				    .foodquantity(foodQuantity)
+				    .img(imagePath)
+				    .build();
 
 			int result = FreshmartDao.INSTANCE.update(freshmart);
 			if (result == 1) {
@@ -268,6 +308,6 @@ public class StorageUpdateFrame extends JFrame {
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this, "수정 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
 		}
-		
+
 	}
 }
