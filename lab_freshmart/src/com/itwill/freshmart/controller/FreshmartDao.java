@@ -82,6 +82,30 @@ public enum FreshmartDao {
 	}
 	
 
+	 private static final String SQL_DELETE_BY_ID = String.format(
+	            "delete from %s where %s = ?", 
+	            TBL_FRESHMART, COL_ID);
+	 
+	 public int delete(Integer id) {
+	        int result = 0;
+	        
+	        Connection conn = null;
+	        PreparedStatement stmt = null;
+	        try {
+	            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+	            stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
+	            stmt.setInt(1, id);
+	            result = stmt.executeUpdate();
+	            
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        } finally {
+	            closeResources(conn, stmt);
+	        }
+	        
+	        return result;
+	    }
+	
 	private static final String SQL_SELECT_ALL = String.format("select * from %s order by %s desc", TBL_FRESHMART,
 			COL_ID);
 
@@ -388,6 +412,28 @@ public enum FreshmartDao {
 
 		        return foodItem;
 		    }
-		
-		
+		 
+		 public List<Freshmart> readByExpirationDateDesc(String storage) {
+			    String sql = String.format(
+			        "SELECT * FROM %s WHERE %s = ? ORDER BY %s DESC",
+			        TBL_FRESHMART,
+			        COL_STORAGE,
+			        COL_EXPIRATION_DATE
+			    );
+			    List<Freshmart> resultList = new ArrayList<>();
+
+			    try (Connection conn = getConnection();
+			         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+			        pstmt.setString(1, storage);
+			        ResultSet rs = pstmt.executeQuery();
+
+			        while (rs.next()) {
+			            resultList.add(getFreshmartFromResultSet(rs));
+			        }
+			    } catch (SQLException e) {
+			        e.printStackTrace();
+			    }
+
+			    return resultList;
+			}
 }
