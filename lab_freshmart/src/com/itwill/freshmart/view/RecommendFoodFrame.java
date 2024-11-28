@@ -6,15 +6,14 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
-import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,7 +25,6 @@ import com.itwill.freshmart.controller.FreshmartDao;
 import com.itwill.freshmart.model.Freshmart;
 
 public class RecommendFoodFrame extends JFrame {
-	
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -36,15 +34,11 @@ public class RecommendFoodFrame extends JFrame {
 	private JLabel lblExpirationDate;
 	private JLabel lblFoodQuantity;
 	private Component parentComponent;
-	private JButton btnClose;
-	private ButtonGroup buttonGroup;
-
 	private JLabel foodNameLabel;
 	private JLabel foodQuantityLabel;
 	private JLabel expirationDateLabel;
 
 	private FreshmartDao freshmartDao;
-
 
 	/**
 	 * Launch the application.
@@ -61,32 +55,29 @@ public class RecommendFoodFrame extends JFrame {
 			}
 		});
 	}
-	
+
 	public RecommendFoodFrame(Component parentComponent) {
-	 freshmartDao = FreshmartDao.INSTANCE;
+		freshmartDao = FreshmartDao.INSTANCE;
 		this.parentComponent = parentComponent;
 		initialize();
 	}
-	
-	
 
 	/**
 	 * Create the frame.
 	 */
+	// Import는 동일합니다.
 	public void initialize() {
 	    contentPane = new JPanel();
 	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    setContentPane(contentPane);
 
 	    setTitle("오늘 뭐 먹지?");
-
 	    Toolkit toolkit = Toolkit.getDefaultToolkit();
 	    Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
 	    this.setIconImage(img);
 
 	    setSize(510, 368);
 	    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
 	    setLocationRelativeTo(parentComponent);
 	    contentPane.setLayout(null);
 
@@ -134,71 +125,85 @@ public class RecommendFoodFrame extends JFrame {
 	    categoryLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 	    contentPane.add(categoryLabel);
 
+	    JLabel storageLocationLabel = new JLabel("저장 위치:");
+	    storageLocationLabel.setBounds(237, 218, 80, 20);
+	    storageLocationLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+	    contentPane.add(storageLocationLabel);
+
+	    JLabel storageLabel = new JLabel();
+	    storageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+	    storageLabel.setBounds(317, 218, 131, 25);
+	    storageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+	    contentPane.add(storageLabel);
+
 	    imageLabel = new JLabel("이미지가 선택되지 않았습니다.");
 	    imageLabel.setBounds(20, 10, 212, 203);
 	    imageLabel.setFont(new Font("맑은 고딕", Font.BOLD, 13));
 	    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 	    contentPane.add(imageLabel);
-	    
-        JLabel recipeSuggestionLabel = new JLabel("더 맛있게 먹을 수 있는 레시피가 궁금하다면?");
-        recipeSuggestionLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-        recipeSuggestionLabel.setBounds(20, 248, 435, 20);
-        contentPane.add(recipeSuggestionLabel);
 
-	    Freshmart fridgeFood = freshmartDao.recommendFood("냉장실");
-	    Freshmart freezerFood = freshmartDao.recommendFood("냉동실");
+	    JLabel recipeSuggestionLabel = new JLabel("더 맛있게 먹을 수 있는 레시피가 궁금하다면?");
+	    recipeSuggestionLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
+	    recipeSuggestionLabel.setBounds(20, 248, 435, 20);
+	    contentPane.add(recipeSuggestionLabel);
 
-	    Freshmart recommendedFood = (Math.random() < 0.5) ? fridgeFood : freezerFood;
+	    // 음식 데이터 가져오기
+	    List<Freshmart> fridgeFoodList = freshmartDao.readByExpirationDateAsc("냉장실");
+	    List<Freshmart> freezerFoodList = freshmartDao.readByExpirationDateAsc("냉동실");
 
+	    if (fridgeFoodList.isEmpty() && freezerFoodList.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "추천할 수 있는 음식이 없습니다.");
+	        return;
+	    }
+
+	    // 데이터 병합 및 정렬
+	    List<Freshmart> allFoods = new ArrayList<>();
+	    allFoods.addAll(fridgeFoodList);
+	    allFoods.addAll(freezerFoodList);
+	    allFoods.sort(Comparator.comparing(Freshmart::getExpirationdate));
+
+	    // 동일 유통기한 음식 무작위 선택
+	    LocalDate nearestExpirationDate = allFoods.get(0).getExpirationdate();
+	    List<Freshmart> sameExpirationFoods = allFoods.stream()
+	        .filter(food -> food.getExpirationdate().equals(nearestExpirationDate))
+	        .toList();
+	    Random random = new Random();
+	    Freshmart recommendedFood = sameExpirationFoods.get(random.nextInt(sameExpirationFoods.size()));
+
+	    // UI에 데이터 표시
 	    if (recommendedFood != null) {
-	        String foodName = recommendedFood.getFoodname();
-	        foodNameLabel.setText(foodName);
-
-	        JLabel todayFoodLabel = new JLabel("오늘은 " + foodName + "!!!!");
-	        todayFoodLabel.setFont(new Font("맑은 고딕", Font.BOLD, 18));
-	        todayFoodLabel.setBounds(20, 220, 450, 30);
-	        contentPane.add(todayFoodLabel);
-	        
-	        String categoryName = freshmartDao.getFoodCategoryNameById(recommendedFood.getTypeid());
-	        categoryLabel.setText(categoryName);
-
+	        foodNameLabel.setText(recommendedFood.getFoodname());
+	        categoryLabel.setText(freshmartDao.getFoodCategoryNameById(recommendedFood.getTypeid()));
 	        foodQuantityLabel.setText(String.valueOf(recommendedFood.getFoodquantity()));
 
 	        LocalDate expirationDate = recommendedFood.getExpirationdate();
-	        LocalDate currentDate = LocalDate.now();
-
-	        long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
-
-	        String formattedExpirationDate = expirationDate.toString();
+	        long daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), expirationDate);
 
 	        if (daysRemaining > 0) {
-	            expirationDateLabel.setText(formattedExpirationDate + " / " + daysRemaining + "일 남음");
-	            if (daysRemaining <= 5) {
-	                expirationDateLabel.setForeground(Color.RED);
-	            } else {
-	                expirationDateLabel.setForeground(Color.BLACK);
-	            }
+	            expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");
+	            expirationDateLabel.setForeground(daysRemaining <= 5 ? Color.RED : Color.BLACK);
 	        } else if (daysRemaining == 0) {
-	            expirationDateLabel.setText("유통기한 만료");
+	            expirationDateLabel.setText("0일 남음");
 	            expirationDateLabel.setForeground(Color.RED);
 	        } else {
 	            expirationDateLabel.setText("이미 만료됨");
 	            expirationDateLabel.setForeground(Color.RED);
 	        }
+	        storageLabel.setText(recommendedFood.getStorage());
 
 	        String imagePath = recommendedFood.getIMG();
 	        if (imagePath != null && !imagePath.isEmpty()) {
 	            ImageIcon imageIcon = new ImageIcon(imagePath);
-	            Image randimg = imageIcon.getImage();
-	            Image scaledImg = randimg.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
-	            imageIcon = new ImageIcon(scaledImg);
-	            imageLabel.setIcon(imageIcon);
+	            Image randImg = imageIcon.getImage();
+	            Image scaledImg = randImg.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(), Image.SCALE_SMOOTH);
+	            imageLabel.setIcon(new ImageIcon(scaledImg));
+	        } else {
+	            imageLabel.setText("이미지 없음");
 	        }
-
-
 	    } else {
 	        JOptionPane.showMessageDialog(this, "추천할 수 있는 음식이 없습니다.");
 	    }
-	    
 	}
+
+
 }
