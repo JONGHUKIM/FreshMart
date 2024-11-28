@@ -43,7 +43,7 @@ public class FreezerStorage extends JFrame {
 	private JLabel lblFoodQuantity;
 
 	private JComboBox<String> categoryComboBox_1;
-	private JButton btnSearch;
+	private JButton btnDetails;
 
 	private Component parentComponent;
 	private FreezerNotify app;
@@ -149,13 +149,13 @@ public class FreezerStorage extends JFrame {
 		imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		contentPane.add(imageLabel);
 
-		btnSearch = new JButton("검색");
-		btnSearch.setBounds(0, 488, 80, 30);
-		btnSearch.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		btnSearch.addActionListener(e -> {
+		btnDetails = new JButton("상세");
+		btnDetails.setBounds(0, 488, 80, 30);
+		btnDetails.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		btnDetails.addActionListener(e -> {
 			dispose();
 		});
-		contentPane.add(btnSearch);
+		contentPane.add(btnDetails);
 		
 		btnUpdate = new JButton("수정");
 		btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
