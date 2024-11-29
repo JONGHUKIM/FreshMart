@@ -1,0 +1,162 @@
+package com.itwill.freshmart.controller;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+
+import com.itwill.freshmart.model.RecipeCommunity;
+import static com.itwill.jdbcOracle.OracleJdbc.PASSWORD;
+import static com.itwill.jdbcOracle.OracleJdbc.URL;
+import static com.itwill.jdbcOracle.OracleJdbc.USER;
+import static com.itwill.freshmart.model.RecipeCommunity.Entity.*;
+
+import oracle.jdbc.OracleDriver;
+
+public enum RecipeCommunityDao {
+
+	INSTANCE;
+
+	RecipeCommunityDao() {
+
+		try {
+			DriverManager.registerDriver(new OracleDriver());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void closeResources(Connection conn, Statement stmt, ResultSet rs) {
+		try {
+			if (rs != null)
+				rs.close();
+			if (stmt != null)
+				stmt.close();
+			if (conn != null)
+				conn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void closeResources(Connection conn, Statement stmt) {
+		closeResources(conn, stmt, null);
+	}
+
+	private RecipeCommunity getRecipeCommunityFromResultSet(ResultSet rs) throws SQLException {
+		int id = rs.getInt(COL_ID);
+		String title = rs.getString(COL_TITLE);
+		String content = rs.getString(COL_CONTENT);
+		String author = rs.getString(COL_AUTHOR);
+		Timestamp createdTime = rs.getTimestamp(COL_CREATED_TIME);
+		Timestamp modifiedTime = rs.getTimestamp(COL_MODIFIED_TIME);
+
+		return RecipeCommunity.builder().id(id).title(title).content(content).author(author).createdTime(createdTime)
+				.modifiedTime(modifiedTime).build();
+
+	}
+	
+	private static final String SQL_SELECT_ALL = String.format(TBL_RECIPECOMMUNITY, COL_ID);
+	
+	public List<RecipeCommunity> read() {
+		List<RecipeCommunity> RecipeCommunitys = new ArrayList<RecipeCommunity>();
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			stmt = conn.prepareStatement(SQL_SELECT_ALL);
+			rs = stmt.executeQuery();
+			
+			while (rs.next()) {
+				RecipeCommunity recipeCommunity = getRecipeCommunityFromResultSet(rs);
+				RecipeCommunitys.add(recipeCommunity);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+		
+		return RecipeCommunitys;
+	}
+	
+	private static final String SQL_INSERT = String.format(
+            "insert into %s (%s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", 
+            TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
+    
+    // Create(insert 문장)을 실행하는 메서드.
+    public int create(RecipeCommunity recipeCommunity) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            // DB 서버에 접속.
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            // Statement 객체 생성.
+            stmt = conn.prepareStatement(SQL_INSERT);
+            
+            // PreparedStatement의 파라미터(?)를 값으로 채움(parameter binding).
+            stmt.setString(1, recipeCommunity.getTitle());
+            stmt.setString(2, recipeCommunity.getContent());
+            stmt.setString(3, recipeCommunity.getAuthor());
+            
+            // SQL 문장을 DB 서버에서 실행.
+            result = stmt.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 사용했던 리소스 해제.
+            closeResources(conn, stmt);
+        }
+        
+        return result;
+    }
+    
+    private static final String SQL_DELETE_BY_ID = String.format(
+            "delete from %s where %s = ?", 
+            TBL_RECIPECOMMUNITY, COL_ID);
+    
+    // Delete를 실행하는 메서드.
+    public int delete(Integer id) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            // DB 접속.
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            // Statement 생성.
+            stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
+            
+            // PreparedStatement parameter binding
+            stmt.setInt(1, id);
+            
+            // SQL 실행
+            result = stmt.executeUpdate();
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt);
+        }
+        
+        return result;
+    }
+    
+    
+
+}
