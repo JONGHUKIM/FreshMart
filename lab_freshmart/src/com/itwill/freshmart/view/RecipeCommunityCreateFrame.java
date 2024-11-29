@@ -96,6 +96,7 @@ public class RecipeCommunityCreateFrame extends JFrame {
 		btnPanel.add(buttonSave);
 
 		buttonCancel = new JButton("취소");
+		buttonCancel.addActionListener(e -> dispose());
 		buttonCancel.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		btnPanel.add(buttonCancel);
 
