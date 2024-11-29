@@ -107,6 +107,8 @@ public class RecipeCommunity {
 			return this;
 		}
 
+		
+		
 		public RecipeCommunityBuilder content(String content) {
 			this.content = content;
 			return this;
