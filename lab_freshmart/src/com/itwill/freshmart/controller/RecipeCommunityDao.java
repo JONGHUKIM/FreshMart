@@ -10,7 +10,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.itwill.freshmart.model.RecipeCommunity;
 import static com.itwill.jdbcOracle.OracleJdbc.PASSWORD;
 import static com.itwill.jdbcOracle.OracleJdbc.URL;
@@ -62,21 +61,21 @@ public enum RecipeCommunityDao {
 				.modifiedTime(modifiedTime).build();
 
 	}
-	
+
 	private static final String SQL_SELECT_ALL = String.format(TBL_RECIPECOMMUNITY, COL_ID);
-	
+
 	public List<RecipeCommunity> read() {
 		List<RecipeCommunity> RecipeCommunitys = new ArrayList<RecipeCommunity>();
-		
+
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
 			stmt = conn.prepareStatement(SQL_SELECT_ALL);
 			rs = stmt.executeQuery();
-			
+
 			while (rs.next()) {
 				RecipeCommunity recipeCommunity = getRecipeCommunityFromResultSet(rs);
 				RecipeCommunitys.add(recipeCommunity);
@@ -86,152 +85,148 @@ public enum RecipeCommunityDao {
 		} finally {
 			closeResources(conn, stmt, rs);
 		}
-		
+
 		return RecipeCommunitys;
 	}
-	
+
 	private static final String SQL_INSERT = String.format(
-            "insert into %s (%s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", 
-            TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
-    
-    // Create(insert 문장)을 실행하는 메서드.
-    public int create(RecipeCommunity recipeCommunity) {
-        int result = 0;
-        
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            // DB 서버에 접속.
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            
-            // Statement 객체 생성.
-            stmt = conn.prepareStatement(SQL_INSERT);
-            
-            // PreparedStatement의 파라미터(?)를 값으로 채움(parameter binding).
-            stmt.setString(1, recipeCommunity.getTitle());
-            stmt.setString(2, recipeCommunity.getContent());
-            stmt.setString(3, recipeCommunity.getAuthor());
-            
-            // SQL 문장을 DB 서버에서 실행.
-            result = stmt.executeUpdate();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            // 사용했던 리소스 해제.
-            closeResources(conn, stmt);
-        }
-        
-        return result;
-    }
-    
-    private static final String SQL_DELETE_BY_ID = String.format(
-            "delete from %s where %s = ?", 
-            TBL_RECIPECOMMUNITY, COL_ID);
-    
-    // Delete를 실행하는 메서드.
-    public int delete(Integer id) {
-        int result = 0;
-        
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            // DB 접속.
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            
-            // Statement 생성.
-            stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
-            
-            // PreparedStatement parameter binding
-            stmt.setInt(1, id);
-            
-            // SQL 실행
-            result = stmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, stmt);
-        }
-        
-        return result;
-    }
-    
-    private static final String SQL_SELECT_BY_ID = String.format(
-            "select * from %s where %s = ?", 
-            TBL_RECIPECOMMUNITY, COL_ID);
-    
-    public RecipeCommunity read(Integer id) {
-    	RecipeCommunity recipeCommunity = null;
-        
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            
-            stmt = conn.prepareStatement(SQL_SELECT_BY_ID);
-            stmt.setInt(1, id);
-            
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-            	recipeCommunity = getRecipeCommunityFromResultSet(rs);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, stmt, rs);
-        }
-        
-        return recipeCommunity;
-    }
-    
-    private static final String SQL_UPDATE_BY_ID = String.format(
-            "update %s set %s = ?, %s = ?, %s = systimestamp where %s = ?", 
-            TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_MODIFIED_TIME, COL_ID);
-    public int update(RecipeCommunity recipeCommunity) {
-        int result = 0;
-        
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            
-            stmt = conn.prepareStatement(SQL_UPDATE_BY_ID);
-            stmt.setString(1, recipeCommunity.getTitle());
-            stmt.setString(2, recipeCommunity.getContent());
-            stmt.setInt(3, recipeCommunity.getId());
-            
-            result = stmt.executeUpdate();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            closeResources(conn, stmt);
-        }
-        
-        return result;
-    }
-    
-    private static final String SQL_SELECT_BY_TITLE = String.format(
-            "select * from %s where upper(%s) like upper(?) order by %s desc",
-            TBL_RECIPECOMMUNITY, COL_TITLE, COL_ID);
-    
-    // 대/소문자 구분없이 내용에 포함된 문자열로 검색하기.
-    private static final String SQL_SELECT_BY_CONTENT = String.format(
-            "select * from %s where upper(%s) like upper(?) order by %s desc", 
-            TBL_RECIPECOMMUNITY, COL_CONTENT, COL_ID);
-    
-    // 대/소문자 구분없이 작성자에 포함된 문자열로 검색하기.
-    private static final String SQL_SELECT_BY_AUTHOR = String.format(
-            "select * from %s where upper(%s) like upper(?) order by %s desc", 
-            TBL_RECIPECOMMUNITY, COL_AUTHOR, COL_ID);
-    
-    // 대/소문자 구분없이 제목 또는 내용에 포함된 문자열로 검색하기.
-    private static final String SQL_SELECT_BY_TITLE_OR_CONTENT = String.format(
-            "selct * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc", 
-            TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_ID);
-    
+			"insert into %s (%s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", TBL_RECIPECOMMUNITY,
+			COL_TITLE, COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
+
+	// Create(insert 문장)을 실행하는 메서드.
+	public int create(RecipeCommunity recipeCommunity) {
+		int result = 0;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			// DB 서버에 접속.
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+			// Statement 객체 생성.
+			stmt = conn.prepareStatement(SQL_INSERT);
+
+			// PreparedStatement의 파라미터(?)를 값으로 채움(parameter binding).
+			stmt.setString(1, recipeCommunity.getTitle());
+			stmt.setString(2, recipeCommunity.getContent());
+			stmt.setString(3, recipeCommunity.getAuthor());
+
+			// SQL 문장을 DB 서버에서 실행.
+			result = stmt.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			// 사용했던 리소스 해제.
+			closeResources(conn, stmt);
+		}
+
+		return result;
+	}
+
+	private static final String SQL_DELETE_BY_ID = String.format("delete from %s where %s = ?", TBL_RECIPECOMMUNITY,
+			COL_ID);
+
+	// Delete를 실행하는 메서드.
+	public int delete(Integer id) {
+		int result = 0;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			// DB 접속.
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+			// Statement 생성.
+			stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
+
+			// PreparedStatement parameter binding
+			stmt.setInt(1, id);
+
+			// SQL 실행
+			result = stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt);
+		}
+
+		return result;
+	}
+
+	private static final String SQL_SELECT_BY_ID = String.format("select * from %s where %s = ?", TBL_RECIPECOMMUNITY,
+			COL_ID);
+
+	public RecipeCommunity read(Integer id) {
+		RecipeCommunity recipeCommunity = null;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+			stmt = conn.prepareStatement(SQL_SELECT_BY_ID);
+			stmt.setInt(1, id);
+
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				recipeCommunity = getRecipeCommunityFromResultSet(rs);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return recipeCommunity;
+	}
+
+	private static final String SQL_UPDATE_BY_ID = String.format(
+			"update %s set %s = ?, %s = ?, %s = systimestamp where %s = ?", TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT,
+			COL_MODIFIED_TIME, COL_ID);
+
+	public int update(RecipeCommunity recipeCommunity) {
+		int result = 0;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+			stmt = conn.prepareStatement(SQL_UPDATE_BY_ID);
+			stmt.setString(1, recipeCommunity.getTitle());
+			stmt.setString(2, recipeCommunity.getContent());
+			stmt.setInt(3, recipeCommunity.getId());
+
+			result = stmt.executeUpdate();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt);
+		}
+
+		return result;
+	}
+
+	private static final String SQL_SELECT_BY_TITLE = String.format(
+			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_TITLE, COL_ID);
+
+	// 대/소문자 구분없이 내용에 포함된 문자열로 검색하기.
+	private static final String SQL_SELECT_BY_CONTENT = String.format(
+			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_CONTENT,
+			COL_ID);
+
+	// 대/소문자 구분없이 작성자에 포함된 문자열로 검색하기.
+	private static final String SQL_SELECT_BY_AUTHOR = String.format(
+			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_AUTHOR, COL_ID);
+
+	// 대/소문자 구분없이 제목 또는 내용에 포함된 문자열로 검색하기.
+	private static final String SQL_SELECT_BY_TITLE_OR_CONTENT = String.format(
+			"selct * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc",
+			TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_ID);
 
 }
