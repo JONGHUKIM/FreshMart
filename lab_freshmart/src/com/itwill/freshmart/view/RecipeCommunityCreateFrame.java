@@ -7,6 +7,10 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 public class RecipeCommunityCreateFrame extends JFrame {
+	
+	public interface CreateNotify {
+        void notifyCreateSuccess();
+    }
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
