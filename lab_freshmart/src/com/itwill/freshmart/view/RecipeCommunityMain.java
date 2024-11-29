@@ -15,6 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import java.awt.Color;
 
 public class RecipeCommunityMain {
 
@@ -90,7 +91,8 @@ public class RecipeCommunityMain {
 		searchPanel.add(btnSearch);
 
 		btnLike = new JButton();
-		ImageIcon heartIcon = new ImageIcon("C:\\Users\\itwill\\Desktop\\Heart\\like.png");
+		btnLike.setBackground(new Color(0, 0, 0));
+		ImageIcon heartIcon = new ImageIcon("C:\\Users\\itwill\\Desktop\\Heart\\non_like.png");
 		heartIcon = new ImageIcon(heartIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 		btnLike.setIcon(heartIcon);
 		btnLike.setPreferredSize(btnSearch.getPreferredSize());

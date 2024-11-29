@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class RecipeCommunity {
-	
+
 	public static final class Entity {
 		public static final String TBL_RECIPECOMMUNITY = "RECIPECOMMUNITY";
 		public static final String COL_LIKED = "LIKED";
@@ -15,7 +15,7 @@ public class RecipeCommunity {
 		public static final String COL_CREATED_TIME = "CREATED_TIME";
 		public static final String COL_MODIFIED_TIME = "MODIFIED_TIME";
 	}
-	
+
 	private String liked;
 	private Integer id;
 	private String title;
@@ -23,9 +23,9 @@ public class RecipeCommunity {
 	private String author;
 	private LocalDateTime createdTime;
 	private LocalDateTime modifiedTime;
-	
-	public RecipeCommunity(String liked, Integer id, String title, String content, String author, LocalDateTime createdTime,
-			LocalDateTime modifiedTime) {
+
+	public RecipeCommunity(String liked, Integer id, String title, String content, String author,
+			LocalDateTime createdTime, LocalDateTime modifiedTime) {
 		this.liked = liked;
 		this.id = id;
 		this.title = title;
@@ -34,20 +34,14 @@ public class RecipeCommunity {
 		this.createdTime = createdTime;
 		this.modifiedTime = modifiedTime;
 	}
-	
-	
 
 	public String getLiked() {
 		return liked;
 	}
 
-
-
 	public void setLiked(String liked) {
 		this.liked = liked;
 	}
-
-
 
 	public String getTitle() {
 		return title;
@@ -93,20 +87,16 @@ public class RecipeCommunity {
 		return id;
 	}
 
-
-	
 	@Override
 	public String toString() {
 		return "RecipeCommunity [liked=" + liked + ", id=" + id + ", title=" + title + ", content=" + content
 				+ ", author=" + author + ", createdTime=" + createdTime + ", modifiedTime=" + modifiedTime + "]";
 	}
 
-
-
 	public static RecipeCommunityBuilder builder() {
 		return new RecipeCommunityBuilder();
 	}
-	
+
 	public static class RecipeCommunityBuilder {
 		private String liked;
 		private Integer id;
@@ -115,10 +105,10 @@ public class RecipeCommunity {
 		private String author;
 		private LocalDateTime createdTime;
 		private LocalDateTime modifiedTime;
-		
+
 		private RecipeCommunityBuilder() {
 		}
-		
+
 		public RecipeCommunityBuilder liked(String liked) {
 			this.liked = liked;
 			return this;
@@ -134,8 +124,6 @@ public class RecipeCommunity {
 			return this;
 		}
 
-		
-		
 		public RecipeCommunityBuilder content(String content) {
 			this.content = content;
 			return this;
@@ -155,15 +143,12 @@ public class RecipeCommunity {
 
 		public RecipeCommunityBuilder createdTime(Timestamp createdTime) {
 			// Timestamp 타입 객체를 LocalDateTime 타입 객체로 변환해서 필드에 저장
-			if (createdTime != null) { 
+			if (createdTime != null) {
 				this.createdTime = createdTime.toLocalDateTime();
 			}
 			return this;
 		}
 
-		
-		
-		
 		public RecipeCommunityBuilder modifiedTime(LocalDateTime modifiedTime) {
 			this.modifiedTime = modifiedTime;
 			return this;
@@ -171,7 +156,7 @@ public class RecipeCommunity {
 
 		public RecipeCommunityBuilder modifiedTime(Timestamp modifiedTime) {
 			// Timestamp -> LocalDateTime
-			if (modifiedTime != null) { 
+			if (modifiedTime != null) {
 				this.modifiedTime = modifiedTime.toLocalDateTime();
 			}
 			return this;
@@ -182,6 +167,5 @@ public class RecipeCommunity {
 			return new RecipeCommunity(liked, id, title, content, author, createdTime, modifiedTime);
 		}
 	}
-	
 
 }
