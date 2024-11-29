@@ -35,6 +35,7 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 
 	private static final String[] COLUMN_NAMES = { "좋아요", "번호", "제목", "작성자", "작성시간" };
 
+	private JTextField textSearchKeyword;
 	private JFrame frame;
 	private JPanel searchPanel;
 	private JComboBox comboBox;
@@ -74,7 +75,9 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 	 * Create the application.
 	 */
 	public RecipeCommunityMain() {
+		recipeCommunityDao = RecipeCommunityDao.INSTANCE;
 		initialize();
+		initializeTable();
 	}
 
 	/**
@@ -103,6 +106,7 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		textField.setColumns(10);
 
 		btnSearch = new JButton("검색");
+		btnSearch.addActionListener(e -> searchRecipe());
 		btnSearch.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		searchPanel.add(btnSearch);
 
@@ -133,8 +137,7 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 	        table.setFont(new Font("D2Coding", Font.PLAIN, 20));
 	        table.setRowHeight(40);
 	        scrollPane.setViewportView(table);
-	        
-	        // JTable의 컬럼 이름 설정.
+
 	        model = new DefaultTableModel(null, COLUMN_NAMES);
 	        table.setModel(model);
 
@@ -153,6 +156,7 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		buttonPanel.add(btnCreateRecipe);
 
 		btnUpdate = new JButton("수정");
+		btnUpdate.addActionListener(e -> showRecipeCommunityDetails());
 		btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnUpdate);
 
@@ -165,6 +169,43 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		buttonPanel.add(btnDelete);
 		btnExit.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnExit);
+	}
+
+	private void searchRecipe() {
+		
+    int type = comboBox.getSelectedIndex();
+        
+        // 검색어를 JTextField에서 읽음.
+        String keyword = textSearchKeyword.getText();
+        if (keyword.equals("")) {
+            JOptionPane.showMessageDialog(
+                    frame, 
+                    "검색어를 입력하세요.", 
+                    "경고", 
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        List<RecipeCommunity> blogs = recipeCommunityDao.read(type, keyword);
+        resetTableModel(blogs);
+	}
+
+	private void showRecipeCommunityDetails() {
+		  int index = table.getSelectedRow();
+	        if (index == -1) { // 선택된 행이 없는 경우
+	            JOptionPane.showMessageDialog(
+	                    frame, 
+	                    "테이블에서 상세보기를 할 행을 먼저 선택하세요.", 
+	                    "경고", 
+	                    JOptionPane.WARNING_MESSAGE);
+	            return;
+	        }
+	        
+	        // 선택된 행에서 블로그 아이디 값을 찾음.
+	        Integer id = (Integer) model.getValueAt(index, 0);
+	        
+	        // 블로그 상세보기 창을 실행.
+	        RecipeCommunityDetails.showRecipeCommunityDetails(frame, RecipeCommunityMain.this, id);
 	}
 
 	private void deleteRecipe() {
@@ -204,27 +245,24 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		}
 	}
 
-	private void initializeTable() {
-		// Controller(DAO)의 메서드를 호출해서 DB에 저장된 데이터를 읽어옴.
-		try {
-			List<RecipeCommunity> list = recipeCommunityDao.read();
-			resetTableModel(list);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(frame, "작성된 레시피가 없음");
-		}
-		
-	}
+	 private void initializeTable() {
+	  
+	        try {
+	            List<RecipeCommunity> list = recipeCommunityDao.read();
+	            resetTableModel(list);
+	        } catch (Exception e) {
+	            JOptionPane.showMessageDialog(frame, "작성된 레시피가 없음");
+	            e.printStackTrace(); 
+	        }
+	    }
 
-	private void resetTableModel(List<RecipeCommunity> list) {
-		model = new DefaultTableModel(null, COLUMN_NAMES);
-
-		for (RecipeCommunity b : list) {
-			Object[] rowData = { b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
-			model.addRow(rowData);
-		}
-
-		table.setModel(model);
-	}
+	    private void resetTableModel(List<RecipeCommunity> list) {
+	        model.setRowCount(0);  // 테이블 데이터 초기화
+	        for (RecipeCommunity b : list) {
+	            Object[] rowData = { b.getLiked(), b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
+	            model.addRow(rowData);
+	        }
+	    }
 
 	@Override
 	public void notifyCreateSuccess() {

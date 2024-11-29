@@ -50,20 +50,32 @@ public enum RecipeCommunityDao {
 	}
 
 	private RecipeCommunity getRecipeCommunityFromResultSet(ResultSet rs) throws SQLException {
-		String liked = rs.getString(COL_LIKED);
-		int id = rs.getInt(COL_ID);
-		String title = rs.getString(COL_TITLE);
-		String content = rs.getString(COL_CONTENT);
-		String author = rs.getString(COL_AUTHOR);
-		Timestamp createdTime = rs.getTimestamp(COL_CREATED_TIME);
-		Timestamp modifiedTime = rs.getTimestamp(COL_MODIFIED_TIME);
+	    String liked = rs.getString(COL_LIKED);
+	    if (liked == null) liked = "";
 
-		return RecipeCommunity.builder().liked(liked).id(id).title(title).content(content).author(author)
-				.createdTime(createdTime).modifiedTime(modifiedTime).build();
+	    int id = rs.getInt(COL_ID);
+	    String title = rs.getString(COL_TITLE);
+	    String content = rs.getString(COL_CONTENT);
+	    String author = rs.getString(COL_AUTHOR);
 
+	    Timestamp createdTime = rs.getTimestamp(COL_CREATED_TIME);
+	    if (createdTime == null) createdTime = new Timestamp(System.currentTimeMillis());
+
+	    Timestamp modifiedTime = rs.getTimestamp(COL_MODIFIED_TIME);
+	    if (modifiedTime == null) modifiedTime = new Timestamp(System.currentTimeMillis());
+
+	    return RecipeCommunity.builder()
+	            .liked(liked)
+	            .id(id)
+	            .title(title)
+	            .content(content)
+	            .author(author)
+	            .createdTime(createdTime)
+	            .modifiedTime(modifiedTime)
+	            .build();
 	}
 
-	private static final String SQL_SELECT_ALL = String.format(TBL_RECIPECOMMUNITY, COL_ID);
+	private static final String SQL_SELECT_ALL = String.format("select * from %s order by %s desc", TBL_RECIPECOMMUNITY, COL_ID);
 
 	public List<RecipeCommunity> read() {
 		List<RecipeCommunity> RecipeCommunitys = new ArrayList<RecipeCommunity>();
@@ -91,8 +103,8 @@ public enum RecipeCommunityDao {
 	}
 
 	private static final String SQL_INSERT = String.format(
-			"insert into %s (%s, %s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", TBL_RECIPECOMMUNITY,
-			COL_TITLE, COL_LIKED,COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
+			"insert into %s (%s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", TBL_RECIPECOMMUNITY,
+			COL_TITLE, COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
 
 	public int create(RecipeCommunity recipeCommunity) {
 		int result = 0;
