@@ -22,13 +22,14 @@ import javax.swing.table.DefaultTableModel;
 import com.itwill.freshmart.controller.RecipeCommunityDao;
 import com.itwill.freshmart.model.RecipeCommunity;
 import com.itwill.freshmart.view.RecipeCommunityCreateFrame.CreateNotify;
+import com.itwill.freshmart.view.RecipeCommunityDetails.UpdateNotify;
 
 import java.awt.Color;
 import java.awt.Dimension;
 
 import javax.swing.ScrollPaneConstants;
 
-public class RecipeCommunityMain implements CreateNotify {
+public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 
 	private static final String[] SEARCH_TYPE = { "제목", "내용", "제목+내용", "작성자" };
 
@@ -225,8 +226,14 @@ public class RecipeCommunityMain implements CreateNotify {
 		table.setModel(model);
 	}
 
+	@Override
 	public void notifyCreateSuccess() {
 		initializeTable(); // 테이블 새로고침.
 	}
+	
+    @Override
+    public void notifyUpdateSuccess() {
+        initializeTable(); // 테이블 새로고침.
+    }
 
 }
