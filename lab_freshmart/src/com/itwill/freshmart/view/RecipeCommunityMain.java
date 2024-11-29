@@ -24,6 +24,8 @@ import com.itwill.freshmart.model.RecipeCommunity;
 import com.itwill.freshmart.view.RecipeCommunityCreateFrame.CreateNotify;
 
 import java.awt.Color;
+import java.awt.Dimension;
+
 import javax.swing.ScrollPaneConstants;
 
 public class RecipeCommunityMain implements CreateNotify {
@@ -124,8 +126,16 @@ public class RecipeCommunityMain implements CreateNotify {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		table = new JTable();
-		scrollPane.setViewportView(table);
+		  table = new JTable();
+	        table.getTableHeader().setFont(new Font("D2Coding", Font.PLAIN, 20));
+	        table.getTableHeader().setPreferredSize(new Dimension(0, 40));
+	        table.setFont(new Font("D2Coding", Font.PLAIN, 20));
+	        table.setRowHeight(40);
+	        scrollPane.setViewportView(table);
+	        
+	        // JTable의 컬럼 이름 설정.
+	        model = new DefaultTableModel(null, COLUMN_NAMES);
+	        table.setModel(model);
 
 		buttonPanel = new JPanel();
 		frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
