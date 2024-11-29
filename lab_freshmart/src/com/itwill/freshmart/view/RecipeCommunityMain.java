@@ -24,6 +24,7 @@ import com.itwill.freshmart.model.RecipeCommunity;
 import com.itwill.freshmart.view.RecipeCommunityCreateFrame.CreateNotify;
 
 import java.awt.Color;
+import javax.swing.ScrollPaneConstants;
 
 public class RecipeCommunityMain implements CreateNotify {
 
@@ -120,6 +121,7 @@ public class RecipeCommunityMain implements CreateNotify {
 		});
 
 		scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
