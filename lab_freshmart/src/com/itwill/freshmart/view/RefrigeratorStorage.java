@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
@@ -27,7 +28,6 @@ import javax.swing.table.DefaultTableModel;
 
 import com.itwill.freshmart.controller.FreshmartDao;
 import com.itwill.freshmart.model.Freshmart;
-import javax.swing.JRadioButton;
 
 public class RefrigeratorStorage extends JFrame {
 
