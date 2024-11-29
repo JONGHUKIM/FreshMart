@@ -157,6 +157,62 @@ public enum RecipeCommunityDao {
         return result;
     }
     
+    private static final String SQL_SELECT_BY_ID = String.format(
+            "select * from %s where %s = ?", 
+            TBL_RECIPECOMMUNITY, COL_ID);
+    
+    public RecipeCommunity read(Integer id) {
+    	RecipeCommunity recipeCommunity = null;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(SQL_SELECT_BY_ID);
+            stmt.setInt(1, id);
+            
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+            	recipeCommunity = getRecipeCommunityFromResultSet(rs);
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        
+        return recipeCommunity;
+    }
+    
+    private static final String SQL_UPDATE_BY_ID = String.format(
+            "update %s set %s = ?, %s = ?, %s = systimestamp where %s = ?", 
+            TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_MODIFIED_TIME, COL_ID);
+    public int update(RecipeCommunity recipeCommunity) {
+        int result = 0;
+        
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            
+            stmt = conn.prepareStatement(SQL_UPDATE_BY_ID);
+            stmt.setString(1, recipeCommunity.getTitle());
+            stmt.setString(2, recipeCommunity.getContent());
+            stmt.setInt(3, recipeCommunity.getId());
+            
+            result = stmt.executeUpdate();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt);
+        }
+        
+        return result;
+    }
     
 
 }
