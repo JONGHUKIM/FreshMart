@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -15,13 +16,19 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+
+import com.itwill.freshmart.controller.RecipeCommunityDao;
+import com.itwill.freshmart.model.RecipeCommunity;
+import com.itwill.freshmart.view.RecipeCommunityCreateFrame.CreateNotify;
+
 import java.awt.Color;
 
-public class RecipeCommunityMain {
+public class RecipeCommunityMain implements CreateNotify {
 
 	private static final String[] SEARCH_TYPE = { "제목", "내용", "제목+내용", "작성자" };
 
-	private static final String[] COLUMN_NAMES = { "번호", "제목", "작성자", "작성시간" };
+	private static final String[] COLUMN_NAMES = { "좋아요", "번호", "제목", "작성자", "작성시간" };
 
 	private JFrame frame;
 	private JPanel searchPanel;
@@ -37,6 +44,9 @@ public class RecipeCommunityMain {
 	private JButton btnExit;
 	private JButton btnLike;
 	private boolean isLiked = false;
+	private DefaultTableModel model;
+
+	private RecipeCommunityDao recipeCommunityDao;
 
 	/**
 	 * Launch the application.
@@ -117,10 +127,13 @@ public class RecipeCommunityMain {
 		frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
 		btnList = new JButton("목록");
+		btnList.addActionListener(e -> initializeTable());
 		btnList.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnList);
 
 		btnCreateRecipe = new JButton("레시피 작성");
+		btnCreateRecipe.addActionListener(
+				e -> RecipeCommunityCreateFrame.showRecipeCommunityCreateFrame(frame, RecipeCommunityMain.this));
 		btnCreateRecipe.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnCreateRecipe);
 
@@ -146,6 +159,27 @@ public class RecipeCommunityMain {
 					nonLikedIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 			btnLike.setIcon(nonLikedIcon);
 		}
+	}
+
+	private void initializeTable() {
+		// Controller(DAO)의 메서드를 호출해서 DB에 저장된 데이터를 읽어옴.
+		List<RecipeCommunity> list = recipeCommunityDao.read();
+		resetTableModel(list);
+	}
+
+	private void resetTableModel(List<RecipeCommunity> list) {
+		model = new DefaultTableModel(null, COLUMN_NAMES);
+
+		for (RecipeCommunity b : list) {
+			Object[] rowData = { b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
+			model.addRow(rowData);
+		}
+
+		table.setModel(model);
+	}
+
+	public void notifyCreateSuccess() {
+		initializeTable(); // 테이블 새로고침.
 	}
 
 }
