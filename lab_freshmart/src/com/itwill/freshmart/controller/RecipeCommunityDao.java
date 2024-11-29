@@ -91,8 +91,8 @@ public enum RecipeCommunityDao {
 	}
 
 	private static final String SQL_INSERT = String.format(
-			"insert into %s (%s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", TBL_RECIPECOMMUNITY,
-			COL_TITLE, COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
+			"insert into %s (%s, %s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", TBL_RECIPECOMMUNITY,
+			COL_TITLE, COL_LIKED,COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
 
 	public int create(RecipeCommunity recipeCommunity) {
 		int result = 0;
