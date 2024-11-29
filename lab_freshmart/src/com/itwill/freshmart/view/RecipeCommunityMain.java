@@ -12,6 +12,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -47,6 +48,7 @@ public class RecipeCommunityMain implements CreateNotify {
 	private DefaultTableModel model;
 
 	private RecipeCommunityDao recipeCommunityDao;
+	private JButton btnDelete;
 
 	/**
 	 * Launch the application.
@@ -143,8 +145,36 @@ public class RecipeCommunityMain implements CreateNotify {
 
 		btnExit = new JButton("닫기");
 		btnExit.addActionListener(e -> frame.dispose());
+
+		btnDelete = new JButton("삭제");
+		btnDelete.addActionListener(e -> deleteRecipe());
+		btnDelete.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		buttonPanel.add(btnDelete);
 		btnExit.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnExit);
+	}
+
+	private void deleteRecipe() {
+
+		int index = table.getSelectedRow();
+		if (index == -1) {
+			JOptionPane.showMessageDialog(frame, "테이블에서 삭제할 행을 먼저 선택하세요.", "WARNING", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		int confirm = JOptionPane.showConfirmDialog(frame, "정말 삭제할까요?", "삭제 확인", JOptionPane.YES_NO_OPTION);
+		if (confirm == JOptionPane.YES_OPTION) {
+			Integer id = (Integer) model.getValueAt(index, 0);
+
+			int result = recipeCommunityDao.delete(id);
+			if (result == 1) {
+				initializeTable();
+				JOptionPane.showMessageDialog(frame, "삭제 성공");
+			} else {
+				JOptionPane.showMessageDialog(frame, "삭제 실패");
+			}
+		}
+
 	}
 
 	private void toggleLikeStatus() {
@@ -163,8 +193,13 @@ public class RecipeCommunityMain implements CreateNotify {
 
 	private void initializeTable() {
 		// Controller(DAO)의 메서드를 호출해서 DB에 저장된 데이터를 읽어옴.
-		List<RecipeCommunity> list = recipeCommunityDao.read();
-		resetTableModel(list);
+		try {
+			List<RecipeCommunity> list = recipeCommunityDao.read();
+			resetTableModel(list);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(frame, "작성된 레시피가 없음");
+		}
+		
 	}
 
 	private void resetTableModel(List<RecipeCommunity> list) {
