@@ -214,5 +214,24 @@ public enum RecipeCommunityDao {
         return result;
     }
     
+    private static final String SQL_SELECT_BY_TITLE = String.format(
+            "select * from %s where upper(%s) like upper(?) order by %s desc",
+            TBL_RECIPECOMMUNITY, COL_TITLE, COL_ID);
+    
+    // 대/소문자 구분없이 내용에 포함된 문자열로 검색하기.
+    private static final String SQL_SELECT_BY_CONTENT = String.format(
+            "select * from %s where upper(%s) like upper(?) order by %s desc", 
+            TBL_RECIPECOMMUNITY, COL_CONTENT, COL_ID);
+    
+    // 대/소문자 구분없이 작성자에 포함된 문자열로 검색하기.
+    private static final String SQL_SELECT_BY_AUTHOR = String.format(
+            "select * from %s where upper(%s) like upper(?) order by %s desc", 
+            TBL_RECIPECOMMUNITY, COL_AUTHOR, COL_ID);
+    
+    // 대/소문자 구분없이 제목 또는 내용에 포함된 문자열로 검색하기.
+    private static final String SQL_SELECT_BY_TITLE_OR_CONTENT = String.format(
+            "selct * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc", 
+            TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_ID);
+    
 
 }
