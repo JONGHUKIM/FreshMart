@@ -75,7 +75,7 @@ public class RecipeCommunityCreateFrame extends JFrame {
 	 */
 	public void initialize() {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setTitle("Recipe Share");
+		setTitle("New Recipe");
 		setBounds(100, 100, 459, 544);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
