@@ -7,6 +7,7 @@ public class RecipeCommunity {
 	
 	public static final class Entity {
 		public static final String TBL_RECIPECOMMUNITY = "RECIPECOMMUNITY";
+		public static final String COL_LIKED = "LIKED";
 		public static final String COL_ID = "ID";
 		public static final String COL_TITLE = "TITLE";
 		public static final String COL_CONTENT = "CONTENT";
@@ -15,6 +16,7 @@ public class RecipeCommunity {
 		public static final String COL_MODIFIED_TIME = "MODIFIED_TIME";
 	}
 	
+	private String liked;
 	private Integer id;
 	private String title;
 	private String content;
@@ -22,8 +24,9 @@ public class RecipeCommunity {
 	private LocalDateTime createdTime;
 	private LocalDateTime modifiedTime;
 	
-	public RecipeCommunity(Integer id, String title, String content, String author, LocalDateTime createdTime,
+	public RecipeCommunity(String liked, Integer id, String title, String content, String author, LocalDateTime createdTime,
 			LocalDateTime modifiedTime) {
+		this.liked = liked;
 		this.id = id;
 		this.title = title;
 		this.content = content;
@@ -31,6 +34,20 @@ public class RecipeCommunity {
 		this.createdTime = createdTime;
 		this.modifiedTime = modifiedTime;
 	}
+	
+	
+
+	public String getLiked() {
+		return liked;
+	}
+
+
+
+	public void setLiked(String liked) {
+		this.liked = liked;
+	}
+
+
 
 	public String getTitle() {
 		return title;
@@ -76,17 +93,22 @@ public class RecipeCommunity {
 		return id;
 	}
 
+
+	
 	@Override
 	public String toString() {
-		return "RecipeCommunity [id=" + id + ", title=" + title + ", content=" + content + ", author=" + author
-				+ ", createdTime=" + createdTime + ", modifiedTime=" + modifiedTime + "]";
+		return "RecipeCommunity [liked=" + liked + ", id=" + id + ", title=" + title + ", content=" + content
+				+ ", author=" + author + ", createdTime=" + createdTime + ", modifiedTime=" + modifiedTime + "]";
 	}
-	
+
+
+
 	public static RecipeCommunityBuilder builder() {
 		return new RecipeCommunityBuilder();
 	}
 	
 	public static class RecipeCommunityBuilder {
+		private String liked;
 		private Integer id;
 		private String title;
 		private String content;
@@ -95,6 +117,11 @@ public class RecipeCommunity {
 		private LocalDateTime modifiedTime;
 		
 		private RecipeCommunityBuilder() {
+		}
+		
+		public RecipeCommunityBuilder liked(String liked) {
+			this.liked = liked;
+			return this;
 		}
 
 		public RecipeCommunityBuilder id(Integer id) {
@@ -152,7 +179,7 @@ public class RecipeCommunity {
 
 		// (6) 외부 클래스 타입을 리턴하는 메서드
 		public RecipeCommunity build() {
-			return new RecipeCommunity(id, title, content, author, createdTime, modifiedTime);
+			return new RecipeCommunity(liked, id, title, content, author, createdTime, modifiedTime);
 		}
 	}
 	

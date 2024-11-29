@@ -50,6 +50,7 @@ public enum RecipeCommunityDao {
 	}
 
 	private RecipeCommunity getRecipeCommunityFromResultSet(ResultSet rs) throws SQLException {
+		String liked = rs.getString(COL_LIKED);
 		int id = rs.getInt(COL_ID);
 		String title = rs.getString(COL_TITLE);
 		String content = rs.getString(COL_CONTENT);
@@ -57,8 +58,8 @@ public enum RecipeCommunityDao {
 		Timestamp createdTime = rs.getTimestamp(COL_CREATED_TIME);
 		Timestamp modifiedTime = rs.getTimestamp(COL_MODIFIED_TIME);
 
-		return RecipeCommunity.builder().id(id).title(title).content(content).author(author).createdTime(createdTime)
-				.modifiedTime(modifiedTime).build();
+		return RecipeCommunity.builder().liked(liked).id(id).title(title).content(content).author(author)
+				.createdTime(createdTime).modifiedTime(modifiedTime).build();
 
 	}
 
@@ -93,31 +94,25 @@ public enum RecipeCommunityDao {
 			"insert into %s (%s, %s, %s, %s, %s) values (?, ?, ?, systimestamp, systimestamp)", TBL_RECIPECOMMUNITY,
 			COL_TITLE, COL_CONTENT, COL_AUTHOR, COL_CREATED_TIME, COL_MODIFIED_TIME);
 
-	// Create(insert 문장)을 실행하는 메서드.
 	public int create(RecipeCommunity recipeCommunity) {
 		int result = 0;
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
-			// DB 서버에 접속.
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-			// Statement 객체 생성.
 			stmt = conn.prepareStatement(SQL_INSERT);
 
-			// PreparedStatement의 파라미터(?)를 값으로 채움(parameter binding).
 			stmt.setString(1, recipeCommunity.getTitle());
 			stmt.setString(2, recipeCommunity.getContent());
 			stmt.setString(3, recipeCommunity.getAuthor());
 
-			// SQL 문장을 DB 서버에서 실행.
 			result = stmt.executeUpdate();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			// 사용했던 리소스 해제.
 			closeResources(conn, stmt);
 		}
 
@@ -127,23 +122,19 @@ public enum RecipeCommunityDao {
 	private static final String SQL_DELETE_BY_ID = String.format("delete from %s where %s = ?", TBL_RECIPECOMMUNITY,
 			COL_ID);
 
-	// Delete를 실행하는 메서드.
 	public int delete(Integer id) {
 		int result = 0;
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		try {
-			// DB 접속.
+
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-			// Statement 생성.
 			stmt = conn.prepareStatement(SQL_DELETE_BY_ID);
 
-			// PreparedStatement parameter binding
 			stmt.setInt(1, id);
 
-			// SQL 실행
 			result = stmt.executeUpdate();
 
 		} catch (SQLException e) {
@@ -212,33 +203,61 @@ public enum RecipeCommunityDao {
 		return result;
 	}
 
+	private static final String SQL_SELECT_LIKED = String.format("select * from %s where %s = 'Y' order by %s desc",
+			TBL_RECIPECOMMUNITY, COL_LIKED, COL_ID);
+
+	public RecipeCommunity readLiked(Integer id) {
+		RecipeCommunity recipeCommunity = null;
+
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+			stmt = conn.prepareStatement(SQL_SELECT_LIKED);
+
+			rs = stmt.executeQuery();
+
+			if (rs.next()) {
+				recipeCommunity = getRecipeCommunityFromResultSet(rs);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+
+			closeResources(conn, stmt, rs);
+		}
+
+		return recipeCommunity;
+	}
+
 	private static final String SQL_SELECT_BY_TITLE = String.format(
 			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_TITLE, COL_ID);
 
-	// 대/소문자 구분없이 내용에 포함된 문자열로 검색하기.
 	private static final String SQL_SELECT_BY_CONTENT = String.format(
 			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_CONTENT,
 			COL_ID);
 
-	// 대/소문자 구분없이 작성자에 포함된 문자열로 검색하기.
 	private static final String SQL_SELECT_BY_AUTHOR = String.format(
 			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_AUTHOR, COL_ID);
 
-	// 대/소문자 구분없이 제목 또는 내용에 포함된 문자열로 검색하기.
 	private static final String SQL_SELECT_BY_TITLE_OR_CONTENT = String.format(
 			"selct * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc",
 			TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_ID);
 
 	public List<RecipeCommunity> read(int type, String keyword) {
 		List<RecipeCommunity> result = new ArrayList<RecipeCommunity>();
-		
+
 		Connection conn = null;
 		PreparedStatement stmt = null;
 		ResultSet rs = null;
-		
+
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
-			
+
 			String searchKeyword = "%" + keyword + "%";
 			switch (type) {
 			case 0:
@@ -256,7 +275,7 @@ public enum RecipeCommunityDao {
 				stmt.setString(1, searchKeyword);
 				break;
 			}
-			
+
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				RecipeCommunity recipeCommunity = getRecipeCommunityFromResultSet(rs);
@@ -267,8 +286,8 @@ public enum RecipeCommunityDao {
 		} finally {
 			closeResources(conn, stmt, rs);
 		}
-		
+
 		return result;
 	}
-	
+
 }
