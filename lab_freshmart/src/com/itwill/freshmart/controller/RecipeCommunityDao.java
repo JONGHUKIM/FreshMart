@@ -229,4 +229,46 @@ public enum RecipeCommunityDao {
 			"selct * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc",
 			TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_ID);
 
+	public List<RecipeCommunity> read(int type, String keyword) {
+		List<RecipeCommunity> result = new ArrayList<RecipeCommunity>();
+		
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		
+		try {
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+			
+			String searchKeyword = "%" + keyword + "%";
+			switch (type) {
+			case 0:
+				stmt = conn.prepareStatement(SQL_SELECT_BY_TITLE);
+				stmt.setString(1, searchKeyword);
+			case 1:
+				stmt = conn.prepareStatement(SQL_SELECT_BY_CONTENT);
+				stmt.setString(1, searchKeyword);
+			case 2:
+				stmt = conn.prepareStatement(SQL_SELECT_BY_TITLE_OR_CONTENT);
+				stmt.setString(1, searchKeyword);
+				stmt.setString(2, searchKeyword);
+			case 3:
+				stmt = conn.prepareStatement(SQL_SELECT_BY_AUTHOR);
+				stmt.setString(1, searchKeyword);
+				break;
+			}
+			
+			rs = stmt.executeQuery();
+			while (rs.next()) {
+				RecipeCommunity recipeCommunity = getRecipeCommunityFromResultSet(rs);
+				result.add(recipeCommunity);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+		
+		return result;
+	}
+	
 }
