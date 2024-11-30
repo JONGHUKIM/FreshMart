@@ -121,6 +121,7 @@ public class FreshmartMain {
 		btnPanel.add(btnShare);
 
 		btnRecipe = new JButton("레시피 커뮤니티");
+		btnRecipe.addActionListener(e -> RecipeCommunityMain.showRecipeCommunityMain(frame));
 		btnRecipe.setFont(new Font("맑은 고딕", Font.BOLD, 14));
 		btnRecipe.setBounds(216, 360, 195, 48);
 		btnPanel.add(btnRecipe);

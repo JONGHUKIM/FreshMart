@@ -27,7 +27,7 @@ import com.itwill.freshmart.model.RecipeCommunity;
 import com.itwill.freshmart.view.RecipeCommunityCreateFrame.CreateNotify;
 import com.itwill.freshmart.view.RecipeCommunityDetails.UpdateNotify;
 
-public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
+public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateNotify {
 
 	private static final String[] SEARCH_TYPE = { "제목", "내용", "제목+내용", "작성자" };
 
@@ -56,27 +56,25 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					RecipeCommunityMain window = new RecipeCommunityMain();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	 public static void showRecipeCommunityMain(JFrame parentFrame) {
+	        EventQueue.invokeLater(() -> {
+	            try {
+	                RecipeCommunityMain frame = new RecipeCommunityMain(parentFrame);
+	                frame.setVisible(true);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	        });
+	    }
 
 	/**
 	 * Create the application.
 	 */
-	public RecipeCommunityMain() {
-		recipeCommunityDao = RecipeCommunityDao.INSTANCE;
-		initialize();
-		initializeTable();
-	}
+	    public RecipeCommunityMain(JFrame parentFrame) {
+	        recipeCommunityDao = RecipeCommunityDao.INSTANCE;
+	        initialize();
+	        initializeTable();
+	    }
 
 	/**
 	 * Initialize the contents of the frame.
