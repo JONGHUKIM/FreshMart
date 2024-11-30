@@ -109,7 +109,7 @@ public enum FreshmartDao {
 
 	public List<Freshmart> read() {
 
-		List<Freshmart> blogs = new ArrayList<>();
+		List<Freshmart> freshmarts = new ArrayList<>();
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -123,7 +123,14 @@ public enum FreshmartDao {
 			rs = stmt.executeQuery();
 			while (rs.next()) {
 				Freshmart freshmart = getFreshmartFromResultSet(rs);
-				blogs.add(freshmart);
+
+				String imgPath = getFoodImagePath(freshmart.getFoodname());
+				if (imgPath == null) {
+					imgPath = "C:\\Users\\MYCOM\\Desktop\\Images";
+				}
+				freshmart.setIMG(imgPath);
+
+				freshmarts.add(freshmart);
 			}
 
 		} catch (SQLException e) {
@@ -132,7 +139,7 @@ public enum FreshmartDao {
 			closeResources(conn, stmt, rs);
 		}
 
-		return blogs;
+		return freshmarts;
 	}
 
 	public List<Freshmart> readByStorage(String storageType) {
@@ -146,7 +153,15 @@ public enum FreshmartDao {
 
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					resultList.add(getFreshmartFromResultSet(rs));
+					Freshmart freshmart = getFreshmartFromResultSet(rs);
+
+					String imgPath = getFoodImagePath(freshmart.getFoodname());
+					if (imgPath == null) {
+						imgPath = "C:\\Users\\MYCOM\\Desktop\\Images";
+					}
+					freshmart.setIMG(imgPath);
+
+					resultList.add(freshmart);
 				}
 			}
 		} catch (SQLException e) {
@@ -215,6 +230,7 @@ public enum FreshmartDao {
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
+		String imagePath = null;
 
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
@@ -233,20 +249,21 @@ public enum FreshmartDao {
 
 			stmt.setInt(5, freshmart.getFoodquantity());
 
-			String imagePath = null;
-
 			if (freshmart.getIMG() != null && !freshmart.getIMG().isEmpty()) {
-				String uploadPath = "C:\\Users\\MYCOM\\Desktop\\Images\\";
+				String uploadPath = "C:\\Users\\MYCOM\\Desktop\\Images\\"; // 이미지가 저장될 경로
 				File uploadDir = new File(uploadPath);
+
+				// 이미지 디렉토리가 없으면 생성
 				if (!uploadDir.exists()) {
-					uploadDir.mkdirs();
+					uploadDir.mkdirs(); // 디렉토리 생성
 				}
 
-				String fileName = freshmart.getId() + "_" + System.currentTimeMillis() + ".jpg";
-				imagePath = uploadPath + fileName;
-				stmt.setString(6, imagePath);
+				// 고유한 파일 이름 생성
+				String fileName = freshmart.getFoodname() + "_" + System.currentTimeMillis() + ".png";
+				imagePath = uploadPath + fileName; // 경로에 파일 이름 추가
+				stmt.setString(6, imagePath); // DB에 저장될 이미지 경로 설정
 			} else {
-				stmt.setString(6, null);
+				stmt.setString(6, null); // 이미지가 없으면 null 저장
 			}
 
 			conn.setAutoCommit(false);
@@ -256,30 +273,35 @@ public enum FreshmartDao {
 				File imageFile = new File(imagePath);
 				BufferedImage image;
 
+				// 이미지를 불러오는 로직
 				if (freshmart.getIMG() != null && !freshmart.getIMG().isEmpty()) {
-					File imageFile1 = new File(freshmart.getIMG());
+					File imageFile1 = new File(freshmart.getIMG()); // 기존 이미지 경로
 					if (imageFile1.exists()) {
+						// 기존 이미지 파일이 존재하면 읽어서 저장
 						image = ImageIO.read(imageFile1);
 					} else {
+						// 파일이 존재하지 않으면 기본 이미지를 생성
 						image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
 						Graphics2D g2d = image.createGraphics();
 						g2d.setColor(Color.WHITE);
 						g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
 						g2d.setColor(Color.BLACK);
-						g2d.drawString("기본 이미지", 10, 50);
+						g2d.drawString("기본 이미지", 10, 50); // 기본 이미지에 "기본 이미지" 텍스트 표시
 						g2d.dispose();
 					}
 				} else {
+					// 사용자가 이미지를 업로드하지 않았을 경우 기본 이미지 생성
 					image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
 					Graphics2D g2d = image.createGraphics();
 					g2d.setColor(Color.WHITE);
 					g2d.fillRect(0, 0, image.getWidth(), image.getHeight());
 					g2d.setColor(Color.BLACK);
-					g2d.drawString("기본 이미지", 10, 50);
+					g2d.drawString("기본 이미지", 10, 50); // 기본 이미지에 "기본 이미지" 텍스트 표시
 					g2d.dispose();
 				}
 
-				ImageIO.write(image, "jpg", imageFile);
+				// 생성된 이미지를 파일로 저장
+				ImageIO.write(image, "png", imageFile);
 			}
 
 			conn.commit();
@@ -344,6 +366,7 @@ public enum FreshmartDao {
 
 			if (rs.next()) {
 				imagePath = rs.getString(COL_IMG);
+
 			}
 
 		} catch (SQLException e) {
@@ -454,4 +477,5 @@ public enum FreshmartDao {
 		int randomIndex = rand.nextInt(foodList.size());
 		return foodList.get(randomIndex);
 	}
+
 }

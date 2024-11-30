@@ -1,6 +1,8 @@
 package com.itwill.freshmart.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -17,17 +19,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
 
 import com.itwill.freshmart.controller.RecipeCommunityDao;
 import com.itwill.freshmart.model.RecipeCommunity;
 import com.itwill.freshmart.view.RecipeCommunityCreateFrame.CreateNotify;
 import com.itwill.freshmart.view.RecipeCommunityDetails.UpdateNotify;
-
-import java.awt.Color;
-import java.awt.Dimension;
-
-import javax.swing.ScrollPaneConstants;
 
 public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 
@@ -100,10 +98,10 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		comboBox.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		searchPanel.add(comboBox);
 
-		textField = new JTextField();
-		textField.setFont(new Font("맑은 고딕", Font.BOLD, 15));
-		searchPanel.add(textField);
-		textField.setColumns(10);
+		textSearchKeyword = new JTextField();
+		textSearchKeyword.setFont(new Font("맑은 고딕", Font.BOLD, 15));
+		searchPanel.add(textSearchKeyword);
+		textSearchKeyword.setColumns(10);
 
 		btnSearch = new JButton("검색");
 		btnSearch.addActionListener(e -> searchRecipe());
@@ -131,15 +129,15 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-		  table = new JTable();
-	        table.getTableHeader().setFont(new Font("D2Coding", Font.PLAIN, 20));
-	        table.getTableHeader().setPreferredSize(new Dimension(0, 40));
-	        table.setFont(new Font("D2Coding", Font.PLAIN, 20));
-	        table.setRowHeight(40);
-	        scrollPane.setViewportView(table);
+		table = new JTable();
+		table.getTableHeader().setFont(new Font("D2Coding", Font.PLAIN, 20));
+		table.getTableHeader().setPreferredSize(new Dimension(0, 40));
+		table.setFont(new Font("D2Coding", Font.PLAIN, 20));
+		table.setRowHeight(40);
+		scrollPane.setViewportView(table);
 
-	        model = new DefaultTableModel(null, COLUMN_NAMES);
-	        table.setModel(model);
+		model = new DefaultTableModel(null, COLUMN_NAMES);
+		table.setModel(model);
 
 		buttonPanel = new JPanel();
 		frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
@@ -172,40 +170,32 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 	}
 
 	private void searchRecipe() {
-		
-    int type = comboBox.getSelectedIndex();
-        
-        // 검색어를 JTextField에서 읽음.
-        String keyword = textSearchKeyword.getText();
-        if (keyword.equals("")) {
-            JOptionPane.showMessageDialog(
-                    frame, 
-                    "검색어를 입력하세요.", 
-                    "경고", 
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        
-        List<RecipeCommunity> blogs = recipeCommunityDao.read(type, keyword);
-        resetTableModel(blogs);
+
+		int type = comboBox.getSelectedIndex();
+
+		// 검색어를 JTextField에서 읽음.
+		String keyword = textSearchKeyword.getText();
+		if (keyword.equals("")) {
+			JOptionPane.showMessageDialog(frame, "검색어를 입력하세요.", "경고", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		List<RecipeCommunity> recipeCommunities = recipeCommunityDao.read(type, keyword);
+		resetTableModel(recipeCommunities);
 	}
 
 	private void showRecipeCommunityDetails() {
-		  int index = table.getSelectedRow();
-	        if (index == -1) { // 선택된 행이 없는 경우
-	            JOptionPane.showMessageDialog(
-	                    frame, 
-	                    "테이블에서 상세보기를 할 행을 먼저 선택하세요.", 
-	                    "경고", 
-	                    JOptionPane.WARNING_MESSAGE);
-	            return;
-	        }
-	        
-	        // 선택된 행에서 블로그 아이디 값을 찾음.
-	        Integer id = (Integer) model.getValueAt(index, 0);
-	        
-	        // 블로그 상세보기 창을 실행.
-	        RecipeCommunityDetails.showRecipeCommunityDetails(frame, RecipeCommunityMain.this, id);
+		int index = table.getSelectedRow();
+		if (index == -1) { // 선택된 행이 없는 경우
+			JOptionPane.showMessageDialog(frame, "테이블에서 상세보기를 할 행을 먼저 선택하세요.", "경고", JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+
+		// 선택된 행에서 블로그 아이디 값을 찾음.
+		Integer id = (Integer) model.getValueAt(index, 1);
+
+		// 블로그 상세보기 창을 실행.
+		RecipeCommunityDetails.showRecipeCommunityDetails(frame, RecipeCommunityMain.this, id);
 	}
 
 	private void deleteRecipe() {
@@ -218,7 +208,7 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 
 		int confirm = JOptionPane.showConfirmDialog(frame, "정말 삭제할까요?", "삭제 확인", JOptionPane.YES_NO_OPTION);
 		if (confirm == JOptionPane.YES_OPTION) {
-			Integer id = (Integer) model.getValueAt(index, 0);
+			Integer id = (Integer) model.getValueAt(index, 1);
 
 			int result = recipeCommunityDao.delete(id);
 			if (result == 1) {
@@ -245,33 +235,33 @@ public class RecipeCommunityMain implements CreateNotify, UpdateNotify {
 		}
 	}
 
-	 private void initializeTable() {
-	  
-	        try {
-	            List<RecipeCommunity> list = recipeCommunityDao.read();
-	            resetTableModel(list);
-	        } catch (Exception e) {
-	            JOptionPane.showMessageDialog(frame, "작성된 레시피가 없음");
-	            e.printStackTrace(); 
-	        }
-	    }
+	private void initializeTable() {
 
-	    private void resetTableModel(List<RecipeCommunity> list) {
-	        model.setRowCount(0);  // 테이블 데이터 초기화
-	        for (RecipeCommunity b : list) {
-	            Object[] rowData = { b.getLiked(), b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
-	            model.addRow(rowData);
-	        }
-	    }
+		try {
+			List<RecipeCommunity> list = recipeCommunityDao.read();
+			resetTableModel(list);
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(frame, "작성된 레시피가 없음");
+			e.printStackTrace();
+		}
+	}
+
+	private void resetTableModel(List<RecipeCommunity> list) {
+		model.setRowCount(0); // 테이블 데이터 초기화
+		for (RecipeCommunity b : list) {
+			Object[] rowData = { b.getLiked(), b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
+			model.addRow(rowData);
+		}
+	}
 
 	@Override
 	public void notifyCreateSuccess() {
 		initializeTable(); // 테이블 새로고침.
 	}
-	
-    @Override
-    public void notifyUpdateSuccess() {
-        initializeTable(); // 테이블 새로고침.
-    }
+
+	@Override
+	public void notifyUpdateSuccess() {
+		initializeTable(); // 테이블 새로고침.
+	}
 
 }

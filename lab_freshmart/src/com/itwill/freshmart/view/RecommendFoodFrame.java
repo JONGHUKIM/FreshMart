@@ -156,19 +156,37 @@ public class RecommendFoodFrame extends JFrame {
 	        return;
 	    }
 
-	    // 데이터 병합 및 정렬
+	    // 데이터 병합
 	    List<Freshmart> allFoods = new ArrayList<>();
 	    allFoods.addAll(fridgeFoodList);
 	    allFoods.addAll(freezerFoodList);
-	    allFoods.sort(Comparator.comparing(Freshmart::getExpirationdate));
 
-	    // 동일 유통기한 음식 무작위 선택
-	    LocalDate nearestExpirationDate = allFoods.get(0).getExpirationdate();
-	    List<Freshmart> sameExpirationFoods = allFoods.stream()
-	        .filter(food -> food.getExpirationdate().equals(nearestExpirationDate))
-	        .toList();
-	    Random random = new Random();
-	    Freshmart recommendedFood = sameExpirationFoods.get(random.nextInt(sameExpirationFoods.size()));
+	    // 유통기한이 임박한 상품을 먼저 정렬 (현재 날짜 기준)
+	    LocalDate today = LocalDate.now();
+	    List<Freshmart> nearExpirationFoods = new ArrayList<>();
+	    List<Freshmart> otherFoods = new ArrayList<>();
+
+	    // 유통기한 임박한 상품과 그렇지 않은 상품 분리
+	    for (Freshmart food : allFoods) {
+	        if (food.getExpirationdate().isBefore(today.plusDays(3))) {  // 예시로 3일 이내 유통기한 상품을 임박한 것으로 간주
+	            nearExpirationFoods.add(food);
+	        } else {
+	            otherFoods.add(food);
+	        }
+	    }
+
+	    Freshmart recommendedFood = null;
+
+	    // 유통기한 임박한 상품이 있을 경우, 그 중에서 랜덤으로 하나 추천
+	    if (!nearExpirationFoods.isEmpty()) {
+	        Random random = new Random();
+	        recommendedFood = nearExpirationFoods.get(random.nextInt(nearExpirationFoods.size()));
+	    }
+	    // 임박한 상품이 없을 경우, 전체 상품 중 랜덤 추천
+	    else if (!allFoods.isEmpty()) {
+	        Random random = new Random();
+	        recommendedFood = allFoods.get(random.nextInt(allFoods.size()));
+	    }
 
 	    // UI에 데이터 표시
 	    if (recommendedFood != null) {
@@ -177,7 +195,7 @@ public class RecommendFoodFrame extends JFrame {
 	        foodQuantityLabel.setText(String.valueOf(recommendedFood.getFoodquantity()));
 
 	        LocalDate expirationDate = recommendedFood.getExpirationdate();
-	        long daysRemaining = ChronoUnit.DAYS.between(LocalDate.now(), expirationDate);
+	        long daysRemaining = ChronoUnit.DAYS.between(today, expirationDate);
 
 	        if (daysRemaining > 0) {
 	            expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");

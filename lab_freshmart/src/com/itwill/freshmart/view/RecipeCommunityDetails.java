@@ -84,7 +84,7 @@ public class RecipeCommunityDetails extends JFrame {
 	 * Create the frame.
 	 */
 	public void initialize() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setTitle("Update Recipe");
 		setBounds(100, 100, 450, 631);
 		contentPane = new JPanel();
@@ -204,9 +204,10 @@ public class RecipeCommunityDetails extends JFrame {
 		int result = recipeCommunityDao.update(recipeCommunity);
 		
 		if ( result == 1) {
-			JOptionPane.showConfirmDialog(RecipeCommunityDetails.this, "업데이트 성공!");
+			JOptionPane.showMessageDialog(RecipeCommunityDetails.this, "수정이 되었습니다!");
+			dispose();
 		} else {
-			JOptionPane.showConfirmDialog(RecipeCommunityDetails.this, "업데이트 실패!");
+			JOptionPane.showMessageDialog(RecipeCommunityDetails.this, "수정에 실패했습니다");
 		}
 
 	}

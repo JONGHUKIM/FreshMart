@@ -167,6 +167,8 @@ public class FreezerStorage extends JFrame {
 			if (daysRemaining > 0) {
 				expirationDateLabel.setText(formattedExpirationDate + " / " + daysRemaining + "일 남음");
 				if (daysRemaining <= 5) {
+					JOptionPane.showMessageDialog(parentComponent, "유통기한이 임박한 상품이 있습니다!", "경고",
+							JOptionPane.WARNING_MESSAGE);
 					expirationDateLabel.setForeground(Color.RED);
 				} else {
 					expirationDateLabel.setForeground(Color.BLACK);
@@ -180,6 +182,19 @@ public class FreezerStorage extends JFrame {
 				expirationDateLabel.setText(formattedExpirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
 				expirationDateLabel.setForeground(Color.RED);
 			}
+			
+			 String imagePath = freshmartDao.getFoodImagePath(firstItem.getFoodname());
+		        if (imagePath != null && !imagePath.isEmpty()) {
+		            ImageIcon imageIcon = new ImageIcon(imagePath);
+		            Image image = imageIcon.getImage();
+		            Image scaledImage = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(),
+		                    Image.SCALE_SMOOTH);
+		            imageLabel.setIcon(new ImageIcon(scaledImage));
+		            imageLabel.setText(""); // 텍스트 제거
+		        } else {
+		            imageLabel.setIcon(null);
+		            imageLabel.setText("이미지가 없습니다.");
+		        }
 		}
 
 		btnUpdate = new JButton("수정");

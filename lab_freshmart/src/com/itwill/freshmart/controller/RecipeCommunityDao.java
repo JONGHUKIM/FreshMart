@@ -50,32 +50,29 @@ public enum RecipeCommunityDao {
 	}
 
 	private RecipeCommunity getRecipeCommunityFromResultSet(ResultSet rs) throws SQLException {
-	    String liked = rs.getString(COL_LIKED);
-	    if (liked == null) liked = "";
+		String liked = rs.getString(COL_LIKED);
+		if (liked == null)
+			liked = "";
 
-	    int id = rs.getInt(COL_ID);
-	    String title = rs.getString(COL_TITLE);
-	    String content = rs.getString(COL_CONTENT);
-	    String author = rs.getString(COL_AUTHOR);
+		int id = rs.getInt(COL_ID);
+		String title = rs.getString(COL_TITLE);
+		String content = rs.getString(COL_CONTENT);
+		String author = rs.getString(COL_AUTHOR);
 
-	    Timestamp createdTime = rs.getTimestamp(COL_CREATED_TIME);
-	    if (createdTime == null) createdTime = new Timestamp(System.currentTimeMillis());
+		Timestamp createdTime = rs.getTimestamp(COL_CREATED_TIME);
+		if (createdTime == null)
+			createdTime = new Timestamp(System.currentTimeMillis());
 
-	    Timestamp modifiedTime = rs.getTimestamp(COL_MODIFIED_TIME);
-	    if (modifiedTime == null) modifiedTime = new Timestamp(System.currentTimeMillis());
+		Timestamp modifiedTime = rs.getTimestamp(COL_MODIFIED_TIME);
+		if (modifiedTime == null)
+			modifiedTime = new Timestamp(System.currentTimeMillis());
 
-	    return RecipeCommunity.builder()
-	            .liked(liked)
-	            .id(id)
-	            .title(title)
-	            .content(content)
-	            .author(author)
-	            .createdTime(createdTime)
-	            .modifiedTime(modifiedTime)
-	            .build();
+		return RecipeCommunity.builder().liked(liked).id(id).title(title).content(content).author(author)
+				.createdTime(createdTime).modifiedTime(modifiedTime).build();
 	}
 
-	private static final String SQL_SELECT_ALL = String.format("select * from %s order by %s desc", TBL_RECIPECOMMUNITY, COL_ID);
+	private static final String SQL_SELECT_ALL = String.format("select * from %s order by %s desc", TBL_RECIPECOMMUNITY,
+			COL_ID);
 
 	public List<RecipeCommunity> read() {
 		List<RecipeCommunity> RecipeCommunitys = new ArrayList<RecipeCommunity>();
@@ -257,7 +254,7 @@ public enum RecipeCommunityDao {
 			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_AUTHOR, COL_ID);
 
 	private static final String SQL_SELECT_BY_TITLE_OR_CONTENT = String.format(
-			"selct * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc",
+			"select * from %s where upper(%s) like upper(?) or upper(%s) like upper(?) order by %s desc",
 			TBL_RECIPECOMMUNITY, COL_TITLE, COL_CONTENT, COL_ID);
 
 	public List<RecipeCommunity> read(int type, String keyword) {
@@ -275,13 +272,16 @@ public enum RecipeCommunityDao {
 			case 0:
 				stmt = conn.prepareStatement(SQL_SELECT_BY_TITLE);
 				stmt.setString(1, searchKeyword);
+				break;
 			case 1:
 				stmt = conn.prepareStatement(SQL_SELECT_BY_CONTENT);
 				stmt.setString(1, searchKeyword);
+				break;
 			case 2:
 				stmt = conn.prepareStatement(SQL_SELECT_BY_TITLE_OR_CONTENT);
 				stmt.setString(1, searchKeyword);
 				stmt.setString(2, searchKeyword);
+				break;
 			case 3:
 				stmt = conn.prepareStatement(SQL_SELECT_BY_AUTHOR);
 				stmt.setString(1, searchKeyword);
