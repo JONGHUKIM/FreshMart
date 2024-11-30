@@ -282,62 +282,53 @@ public class RefrigeratorStorage extends JFrame {
 		table.getTableHeader().setBackground(Color.LIGHT_GRAY);
 
 		table.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				int selectedRow = table.getSelectedRow();
+		    public void mouseClicked(java.awt.event.MouseEvent evt) {
+		        int selectedRow = table.getSelectedRow();
 
-				if (selectedRow != -1) {
-					String foodName = (String) table.getValueAt(selectedRow, 0);
-					Object foodCategoryObj = table.getValueAt(selectedRow, 1);
-					String foodCategory = foodCategoryObj instanceof Integer ? ((Integer) foodCategoryObj).toString()
-							: (String) foodCategoryObj;
+		        if (selectedRow != -1) {
+		            String foodName = (String) table.getValueAt(selectedRow, 0);
+		            String foodCategory = (String) table.getValueAt(selectedRow, 1); // 변경: String으로 캐스팅
+		            Integer foodQuantity = (Integer) table.getValueAt(selectedRow, 2);
+		            LocalDate expirationDate = (LocalDate) table.getValueAt(selectedRow, 3);
 
+		            foodNameLabel.setText(foodName);
+		            foodQuantityLabel.setText(foodQuantity != null ? foodQuantity.toString() : "N/A");
+		            expirationDateLabel.setText(expirationDate.toString());
 
-					String categoryName = freshmartDao.getFoodCategoryNameById((Integer) foodCategoryObj);
-					categoryLabel.setText(categoryName);
+		            LocalDate currentDate = LocalDate.now();
+		            long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
 
-					Integer foodQuantity = (Integer) table.getValueAt(selectedRow, 2);
-					String foodQuantityStr = foodQuantity != null ? foodQuantity.toString() : "N/A";
-					LocalDate expirationDate = (LocalDate) table.getValueAt(selectedRow, 3);
+		            if (daysRemaining > 0) {
+		                expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");
+		                if (daysRemaining <= 5) {
+		                    expirationDateLabel.setForeground(Color.RED);
+		                } else {
+		                    expirationDateLabel.setForeground(Color.BLACK);
+		                }
+		            } else if (daysRemaining == 0) {
+		                expirationDateLabel.setText(expirationDate + " / 오늘 만료!");
+		                expirationDateLabel.setForeground(Color.RED);
+		                JOptionPane.showMessageDialog(RefrigeratorStorage.this, "유통기한은 오늘이 마지막날입니다!", "경고",
+		                        JOptionPane.WARNING_MESSAGE);
+		            } else {
+		                expirationDateLabel.setText(expirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
+		                expirationDateLabel.setForeground(Color.RED);
+		            }
 
-
-					foodNameLabel.setText(foodName);
-					foodQuantityLabel.setText(foodQuantityStr);
-					expirationDateLabel.setText(expirationDate.toString());
-
-					LocalDate currentDate = LocalDate.now();
-					long daysRemaining = ChronoUnit.DAYS.between(currentDate, expirationDate);
-
-					if (daysRemaining > 0) {
-						expirationDateLabel.setText(expirationDate + " / " + daysRemaining + "일 남음");
-						if (daysRemaining <= 5) {
-							expirationDateLabel.setForeground(Color.RED);
-						} else {
-							expirationDateLabel.setForeground(Color.BLACK);
-						}
-					} else if (daysRemaining == 0) {
-						expirationDateLabel.setText(expirationDate + " / 오늘 만료!");
-						expirationDateLabel.setForeground(Color.RED);
-						JOptionPane.showMessageDialog(RefrigeratorStorage.this, "유통기한은 오늘이 마지막날입니다!", "경고",
-								JOptionPane.WARNING_MESSAGE);
-					} else {
-						expirationDateLabel.setText(expirationDate + " / " + Math.abs(daysRemaining) + "일 지남");
-						expirationDateLabel.setForeground(Color.RED);
-					}
-
-					String imagePath = freshmartDao.getFoodImagePath(foodName);
-					if (imagePath != null && !imagePath.isEmpty()) {
-						ImageIcon imageIcon = new ImageIcon(imagePath);
-						Image image = imageIcon.getImage();
-						Image scaledImage = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(),
-								Image.SCALE_SMOOTH);
-						imageLabel.setIcon(new ImageIcon(scaledImage));
-						imageLabel.setText("");
-					} else {
-						imageLabel.setIcon(null);
-						imageLabel.setText("이미지가 없습니다.");
-					}
-				}
-			}
+		            String imagePath = freshmartDao.getFoodImagePath(foodName);
+		            if (imagePath != null && !imagePath.isEmpty()) {
+		                ImageIcon imageIcon = new ImageIcon(imagePath);
+		                Image image = imageIcon.getImage();
+		                Image scaledImage = image.getScaledInstance(imageLabel.getWidth(), imageLabel.getHeight(),
+		                        Image.SCALE_SMOOTH);
+		                imageLabel.setIcon(new ImageIcon(scaledImage));
+		                imageLabel.setText("");
+		            } else {
+		                imageLabel.setIcon(null);
+		                imageLabel.setText("이미지가 없습니다.");
+		            }
+		        }
+		    }
 		});
 	}
 
@@ -355,15 +346,22 @@ public class RefrigeratorStorage extends JFrame {
 	}
 
 	private void resetTableModel(List<Freshmart> list) {
-		DefaultTableModel model = new DefaultTableModel(null, COLUMN_NAMES);
+	    DefaultTableModel model = new DefaultTableModel(null, COLUMN_NAMES);
 
-		for (Freshmart f : list) {
-			Object[] rowData = { f.getFoodname(), f.getTypeid(), f.getFoodquantity(), f.getExpirationdate(),
-					f.getId() };
-			model.addRow(rowData);
-		}
+	    for (Freshmart f : list) {
+	        // typeId를 통해 카테고리 이름 가져오기
+	        String categoryName = freshmartDao.getFoodCategoryNameById(f.getTypeid());
+	        Object[] rowData = { 
+	            f.getFoodname(), 
+	            categoryName, // 카테고리 이름 추가
+	            f.getFoodquantity(), 
+	            f.getExpirationdate(), 
+	            f.getId() 
+	        };
+	        model.addRow(rowData);
+	    }
 
-		table.setModel(model);
+	    table.setModel(model);
 	}
 
 	private void deleteRefrigerator() {

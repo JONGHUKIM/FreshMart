@@ -16,6 +16,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
+
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
@@ -89,6 +92,10 @@ public class RecipeCommunityDetails extends JFrame {
 		setBounds(100, 100, 450, 631);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		   Toolkit toolkit = Toolkit.getDefaultToolkit();
+	        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
+	        this.setIconImage(img);
 
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout(0, 0));

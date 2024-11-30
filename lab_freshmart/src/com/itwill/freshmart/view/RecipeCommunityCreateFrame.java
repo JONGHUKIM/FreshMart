@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -74,6 +76,10 @@ public class RecipeCommunityCreateFrame extends JFrame {
 		setBounds(100, 100, 459, 544);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		
+		   Toolkit toolkit = Toolkit.getDefaultToolkit();
+	        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
+	        this.setIconImage(img);
 
 		setLocationRelativeTo(parentComponent);
 

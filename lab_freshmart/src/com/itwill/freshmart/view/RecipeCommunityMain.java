@@ -2,18 +2,26 @@ package com.itwill.freshmart.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
+
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -21,6 +29,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import com.itwill.freshmart.controller.RecipeCommunityDao;
 import com.itwill.freshmart.model.RecipeCommunity;
@@ -30,14 +39,12 @@ import com.itwill.freshmart.view.RecipeCommunityDetails.UpdateNotify;
 public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateNotify {
 
 	private static final String[] SEARCH_TYPE = { "제목", "내용", "제목+내용", "작성자" };
-
-	private static final String[] COLUMN_NAMES = { "좋아요", "번호", "제목", "작성자", "작성시간" };
+	private static final String[] COLUMN_NAMES = { "찜목록", "번호", "제목", "작성자", "작성시간", "상태"};
 
 	private JTextField textSearchKeyword;
 	private JFrame frame;
 	private JPanel searchPanel;
 	private JComboBox comboBox;
-	private JTextField textField;
 	private JButton btnSearch;
 	private JScrollPane scrollPane;
 	private JTable table;
@@ -47,52 +54,45 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 	private JButton btnUpdate;
 	private JButton btnExit;
 	private JButton btnLike;
-	private boolean isLiked = false;
 	private DefaultTableModel model;
 
 	private RecipeCommunityDao recipeCommunityDao;
 	private JButton btnDelete;
 
-	/**
-	 * Launch the application.
-	 */
-	 public static void showRecipeCommunityMain(JFrame parentFrame) {
-	        EventQueue.invokeLater(() -> {
-	            try {
-	                RecipeCommunityMain frame = new RecipeCommunityMain(parentFrame);
-	                frame.setVisible(true);
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
-	        });
-	    }
+	private boolean isLiked = false;
 
-	/**
-	 * Create the application.
-	 */
-	    public RecipeCommunityMain(JFrame parentFrame) {
-	        recipeCommunityDao = RecipeCommunityDao.INSTANCE;
-	        initialize();
-	        initializeTable();
-	    }
+	public static void showRecipeCommunityMain(JFrame parentFrame) {
+		EventQueue.invokeLater(() -> {
+			try {
+				RecipeCommunityMain frame = new RecipeCommunityMain(parentFrame);
+				frame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+	}
 
-	/**
-	 * Initialize the contents of the frame.
-	 */
+	public RecipeCommunityMain(JFrame parentFrame) {
+		recipeCommunityDao = RecipeCommunityDao.INSTANCE;
+		initialize();
+		initializeTable();
+	}
+
+
 	private void initialize() {
-		frame = new JFrame();
-		frame.setTitle("Recipe Community");
-		frame.setBounds(100, 100, 586, 587);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		setTitle("Recipe Community");
+		setBounds(100, 100, 586, 587);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		   Toolkit toolkit = Toolkit.getDefaultToolkit();
+	        Image img = toolkit.getImage("C:\\Users\\MYCOM\\Desktop\\RefrigeratorStorageImage\\2.jpg");
+	        this.setIconImage(img);
+		
 		searchPanel = new JPanel();
-		frame.getContentPane().add(searchPanel, BorderLayout.NORTH);
+		this.getContentPane().add(searchPanel, BorderLayout.NORTH);
 
 		comboBox = new JComboBox();
-
-		final DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<String>(SEARCH_TYPE);
+		final DefaultComboBoxModel<String> comboBoxModel = new DefaultComboBoxModel<>(SEARCH_TYPE);
 		comboBox.setModel(comboBoxModel);
-
 		comboBox.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		searchPanel.add(comboBox);
 
@@ -108,9 +108,7 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 
 		btnLike = new JButton();
 		btnLike.setBackground(new Color(0, 0, 0));
-		ImageIcon heartIcon = new ImageIcon("C:\\Users\\itwill\\Desktop\\Heart\\non_like.png");
-		heartIcon = new ImageIcon(heartIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
-		btnLike.setIcon(heartIcon);
+		updateLikeButton();
 		btnLike.setPreferredSize(btnSearch.getPreferredSize());
 		btnLike.setContentAreaFilled(false);
 		btnLike.setBorderPainted(false);
@@ -119,13 +117,15 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 		btnLike.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				toggleLikeStatus();
+				isLiked = !isLiked;
+				updateLikeButton();
+				filterTableByLikeStatus();
 			}
 		});
 
 		scrollPane = new JScrollPane();
 		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-		frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
+		this.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
 		table = new JTable();
 		table.getTableHeader().setFont(new Font("D2Coding", Font.PLAIN, 20));
@@ -133,12 +133,25 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 		table.setFont(new Font("D2Coding", Font.PLAIN, 20));
 		table.setRowHeight(40);
 		scrollPane.setViewportView(table);
+		table.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int row = table.rowAtPoint(e.getPoint());
+				int col = table.columnAtPoint(e.getPoint());
+
+				// "좋아요 버튼" 열이 클릭되었는지 확인
+				if (col == 0) {
+					Integer id = (Integer) model.getValueAt(row, 1); // ID 가져오기
+					toggleLikeStatus(id, row);
+				}
+			}
+		});
 
 		model = new DefaultTableModel(null, COLUMN_NAMES);
 		table.setModel(model);
 
 		buttonPanel = new JPanel();
-		frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+		this.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
 		btnList = new JButton("목록");
 		btnList.addActionListener(e -> initializeTable());
@@ -151,13 +164,13 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 		btnCreateRecipe.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnCreateRecipe);
 
-		btnUpdate = new JButton("수정");
+		btnUpdate = new JButton("상세보기");
 		btnUpdate.addActionListener(e -> showRecipeCommunityDetails());
 		btnUpdate.setFont(new Font("맑은 고딕", Font.BOLD, 15));
 		buttonPanel.add(btnUpdate);
 
 		btnExit = new JButton("닫기");
-		btnExit.addActionListener(e -> frame.dispose());
+		btnExit.addActionListener(e -> this.dispose());
 
 		btnDelete = new JButton("삭제");
 		btnDelete.addActionListener(e -> deleteRecipe());
@@ -167,14 +180,34 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 		buttonPanel.add(btnExit);
 	}
 
+	private void updateLikeButton() {
+		String imagePath = isLiked ? "C:\\Users\\MYCOM\\Desktop\\like\\like.png"
+				: "C:\\Users\\MYCOM\\Desktop\\like\\non_like.png";
+		ImageIcon heartIcon = new ImageIcon(imagePath);
+		heartIcon = new ImageIcon(heartIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
+		btnLike.setIcon(heartIcon);
+	}
+
+	private void filterTableByLikeStatus() {
+		List<RecipeCommunity> list = recipeCommunityDao.read();
+		List<RecipeCommunity> filteredList = new ArrayList();
+
+		for (RecipeCommunity b : list) {
+			if (isLiked && b.getLiked().equals("Y")) {
+				filteredList.add(b);
+			} else if (!isLiked && b.getLiked().equals("N")) {
+				filteredList.add(b);
+			}
+		}
+
+		resetTableModel(filteredList);
+	}
+
 	private void searchRecipe() {
-
 		int type = comboBox.getSelectedIndex();
-
-		// 검색어를 JTextField에서 읽음.
 		String keyword = textSearchKeyword.getText();
 		if (keyword.equals("")) {
-			JOptionPane.showMessageDialog(frame, "검색어를 입력하세요.", "경고", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "검색어를 입력하세요.", "경고", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
@@ -184,82 +217,109 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 
 	private void showRecipeCommunityDetails() {
 		int index = table.getSelectedRow();
-		if (index == -1) { // 선택된 행이 없는 경우
-			JOptionPane.showMessageDialog(frame, "테이블에서 상세보기를 할 행을 먼저 선택하세요.", "경고", JOptionPane.WARNING_MESSAGE);
+		if (index == -1) {
+			JOptionPane.showMessageDialog(this, "테이블에서 상세보기를 할 행을 먼저 선택하세요.", "경고", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		// 선택된 행에서 블로그 아이디 값을 찾음.
 		Integer id = (Integer) model.getValueAt(index, 1);
-
-		// 블로그 상세보기 창을 실행.
-		RecipeCommunityDetails.showRecipeCommunityDetails(frame, RecipeCommunityMain.this, id);
+		RecipeCommunityDetails.showRecipeCommunityDetails(this, RecipeCommunityMain.this, id);
 	}
 
 	private void deleteRecipe() {
-
 		int index = table.getSelectedRow();
 		if (index == -1) {
-			JOptionPane.showMessageDialog(frame, "테이블에서 삭제할 행을 먼저 선택하세요.", "WARNING", JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(this, "테이블에서 삭제할 행을 먼저 선택하세요.", "WARNING", JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 
-		int confirm = JOptionPane.showConfirmDialog(frame, "정말 삭제할까요?", "삭제 확인", JOptionPane.YES_NO_OPTION);
+		int confirm = JOptionPane.showConfirmDialog(this, "정말 삭제할까요?", "삭제 확인", JOptionPane.YES_NO_OPTION);
 		if (confirm == JOptionPane.YES_OPTION) {
 			Integer id = (Integer) model.getValueAt(index, 1);
-
 			int result = recipeCommunityDao.delete(id);
 			if (result == 1) {
 				initializeTable();
-				JOptionPane.showMessageDialog(frame, "삭제 성공");
+				JOptionPane.showMessageDialog(this, "삭제 성공");
 			} else {
-				JOptionPane.showMessageDialog(frame, "삭제 실패");
+				JOptionPane.showMessageDialog(this, "삭제 실패");
 			}
-		}
-
-	}
-
-	private void toggleLikeStatus() {
-		isLiked = !isLiked;
-		if (isLiked) {
-			ImageIcon likedIcon = new ImageIcon("C:\\Users\\itwill\\Desktop\\Heart\\like.png");
-			likedIcon = new ImageIcon(likedIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
-			btnLike.setIcon(likedIcon);
-		} else {
-			ImageIcon nonLikedIcon = new ImageIcon("C:\\Users\\itwill\\Desktop\\Heart\\non_like.png");
-			nonLikedIcon = new ImageIcon(
-					nonLikedIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
-			btnLike.setIcon(nonLikedIcon);
-		}
-	}
-
-	private void initializeTable() {
-
-		try {
-			List<RecipeCommunity> list = recipeCommunityDao.read();
-			resetTableModel(list);
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(frame, "작성된 레시피가 없음");
-			e.printStackTrace();
 		}
 	}
 
 	private void resetTableModel(List<RecipeCommunity> list) {
-		model.setRowCount(0); // 테이블 데이터 초기화
-		for (RecipeCommunity b : list) {
-			Object[] rowData = { b.getLiked(), b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
-			model.addRow(rowData);
+	    model.setRowCount(0);
+	    for (RecipeCommunity b : list) {
+	        String imagePath = b.getLiked().equals("Y") ? "C:\\Users\\MYCOM\\Desktop\\like\\like.png"
+	                : "C:\\Users\\MYCOM\\Desktop\\like\\non_like.png";
+	        ImageIcon likeIcon = new ImageIcon(imagePath);
+	        likeIcon = new ImageIcon(likeIcon.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
+
+	        Object[] rowData = { likeIcon, b.getId(), b.getTitle(), b.getAuthor(), b.getCreatedTime() };
+	        model.addRow(rowData);
+	    }
+
+	    // 첫 번째 열에 대한 렌더러 설정 (이미지 아이콘을 표시)
+	    table.getColumnModel().getColumn(0).setCellRenderer(new LikeButtonRenderer());
+	}
+
+	class LikeButtonRenderer extends JLabel implements TableCellRenderer {
+
+		@Override
+		public java.awt.Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+				boolean hasFocus, int row, int column) {
+			setIcon((ImageIcon) value);
+			setHorizontalAlignment(JLabel.CENTER);
+			return this;
 		}
 	}
 
+	private void toggleLikeStatus(Integer id, int row) {
+
+	    ImageIcon currentIcon = (ImageIcon) model.getValueAt(row, 0);
+
+	    String currentLikeStatus = (String) model.getValueAt(row, 5); 
+
+	
+	    if (currentLikeStatus == null) {
+	        currentLikeStatus = "N";
+	    }
+
+
+	    String newStatus = currentLikeStatus.equals("Y") ? "N" : "Y";
+
+	    String newImagePath = newStatus.equals("Y") 
+	            ? "C:\\Users\\MYCOM\\Desktop\\like\\like.png" 
+	            : "C:\\Users\\MYCOM\\Desktop\\like\\non_like.png";
+
+
+	    boolean isLikedUpdated = recipeCommunityDao.toggleLiked(id);
+	    if (isLikedUpdated) {
+
+	        ImageIcon updatedIcon = new ImageIcon(new ImageIcon(newImagePath).getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
+
+	        model.setValueAt(updatedIcon, row, 0);
+
+	        model.setValueAt(newStatus, row, 5);
+
+	        table.repaint();
+	       
+	    }
+	}
+
+	
+	
 	@Override
 	public void notifyCreateSuccess() {
-		initializeTable(); // 테이블 새로고침.
+		initializeTable();
 	}
 
 	@Override
 	public void notifyUpdateSuccess() {
-		initializeTable(); // 테이블 새로고침.
+		initializeTable();
 	}
 
+	private void initializeTable() {
+		List<RecipeCommunity> list = recipeCommunityDao.read();
+		resetTableModel(list);
+	}
 }

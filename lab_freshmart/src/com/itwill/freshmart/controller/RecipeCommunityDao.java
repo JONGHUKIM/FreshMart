@@ -212,11 +212,12 @@ public enum RecipeCommunityDao {
 		return result;
 	}
 
-	private static final String SQL_SELECT_LIKED = String.format("select * from %s where %s = 'Y' order by %s desc",
+	// readByLiked 메서드 추가 (liked 값으로 조회)
+	private static final String SQL_SELECT_BY_LIKED = String.format("select * from %s where %s = ? order by %s desc",
 			TBL_RECIPECOMMUNITY, COL_LIKED, COL_ID);
 
-	public RecipeCommunity readLiked(Integer id) {
-		RecipeCommunity recipeCommunity = null;
+	public List<RecipeCommunity> readByLiked(String liked) {
+		List<RecipeCommunity> result = new ArrayList<RecipeCommunity>();
 
 		Connection conn = null;
 		PreparedStatement stmt = null;
@@ -225,24 +226,77 @@ public enum RecipeCommunityDao {
 		try {
 			conn = DriverManager.getConnection(URL, USER, PASSWORD);
 
-			stmt = conn.prepareStatement(SQL_SELECT_LIKED);
+			stmt = conn.prepareStatement(SQL_SELECT_BY_LIKED);
+			stmt.setString(1, liked); // liked 값 (예: 'Y' 또는 'N')
 
 			rs = stmt.executeQuery();
-
-			if (rs.next()) {
-				recipeCommunity = getRecipeCommunityFromResultSet(rs);
+			while (rs.next()) {
+				RecipeCommunity recipeCommunity = getRecipeCommunityFromResultSet(rs);
+				result.add(recipeCommunity);
 			}
 
-		} catch (Exception e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-
 			closeResources(conn, stmt, rs);
 		}
 
-		return recipeCommunity;
+		return result;
 	}
+	
+	public RecipeCommunity findById(Integer id) {
+	    return read(id); // 기존 read 메서드 재활용
+	}
+	
+	private static final String SQL_SELECT_LIKED_BY_ID = String.format(
+		    "SELECT %s FROM %s WHERE %s = ?", COL_LIKED, TBL_RECIPECOMMUNITY, COL_ID);
 
+		private static final String SQL_UPDATE_LIKED_BY_ID = String.format(
+		    "UPDATE %s SET %s = ?, %s = systimestamp WHERE %s = ?", 
+		    TBL_RECIPECOMMUNITY, COL_LIKED, COL_MODIFIED_TIME, COL_ID);
+
+		public boolean toggleLiked(Integer id) {
+		    boolean isLiked = false;  // 기본값
+		    Connection conn = null;
+		    PreparedStatement selectStmt = null;
+		    PreparedStatement updateStmt = null;
+		    ResultSet rs = null;
+
+		    try {
+		        conn = DriverManager.getConnection(URL, USER, PASSWORD);
+
+		        // 현재 liked 값 가져오기
+		        selectStmt = conn.prepareStatement(SQL_SELECT_LIKED_BY_ID);
+		        selectStmt.setInt(1, id);
+		        rs = selectStmt.executeQuery();
+
+		        if (rs.next()) {
+		            String currentLiked = rs.getString(COL_LIKED);
+		            String newLiked = "N";  // 기본값 "N"
+
+		            if ("N".equalsIgnoreCase(currentLiked)) {
+		                newLiked = "Y";  // N -> Y
+		                isLiked = true;
+		            }
+
+		            // liked 값 업데이트
+		            updateStmt = conn.prepareStatement(SQL_UPDATE_LIKED_BY_ID);
+		            updateStmt.setString(1, newLiked);
+		            updateStmt.setInt(2, id);
+		            updateStmt.executeUpdate();
+		        }
+
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    } finally {
+		        closeResources(conn, selectStmt, rs);
+		        closeResources(conn, updateStmt);
+		    }
+
+		    return isLiked;  // 최종 liked 상태 반환
+		}
+
+	// 기존의 검색 메서드들
 	private static final String SQL_SELECT_BY_TITLE = String.format(
 			"select * from %s where upper(%s) like upper(?) order by %s desc", TBL_RECIPECOMMUNITY, COL_TITLE, COL_ID);
 
