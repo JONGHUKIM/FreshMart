@@ -61,18 +61,19 @@ public class RecipeCommunityDetails extends JFrame {
 	 * Launch the application.
 	 */
 	public static void showRecipeCommunityDetails(Component parentComponent, UpdateNotify app, Integer id) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					RecipeCommunityDetails frame = new RecipeCommunityDetails(parentComponent, app, id);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+	    EventQueue.invokeLater(new Runnable() {
+	        public void run() {
+	            try {
+	                RecipeCommunityDetails frame = new RecipeCommunityDetails(parentComponent, app, id);
+	                frame.setVisible(true);
+	                
+	                // 부모 컴포넌트를 기준으로 중앙에 위치시킴
+	                frame.setLocationRelativeTo(parentComponent);  // 이 부분이 중앙에 띄우는 코드입니다.
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+	    });
 	}
-
 	private RecipeCommunityDetails(Component parentComponent, UpdateNotify app, Integer id) {
 		this.recipeCommunityDao = RecipeCommunityDao.INSTANCE;
 		this.parentComponent = parentComponent;

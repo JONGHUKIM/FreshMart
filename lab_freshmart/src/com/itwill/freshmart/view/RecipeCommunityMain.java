@@ -63,14 +63,17 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 	private boolean isLiked = false;
 
 	public static void showRecipeCommunityMain(JFrame parentFrame) {
-		EventQueue.invokeLater(() -> {
-			try {
-				RecipeCommunityMain frame = new RecipeCommunityMain(parentFrame);
-				frame.setVisible(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
+	    EventQueue.invokeLater(() -> {
+	        try {
+	            RecipeCommunityMain frame = new RecipeCommunityMain(parentFrame);
+	            frame.setVisible(true);
+	            
+	            // 부모 프레임을 기준으로 중앙에 위치시킴
+	            frame.setLocationRelativeTo(parentFrame); // 이 부분이 중앙에 띄우는 코드입니다.
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    });
 	}
 
 	public RecipeCommunityMain(JFrame parentFrame) {
