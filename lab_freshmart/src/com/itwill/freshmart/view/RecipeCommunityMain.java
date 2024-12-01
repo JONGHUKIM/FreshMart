@@ -28,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -286,12 +287,15 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 
 	    boolean isLikedUpdated = recipeCommunityDao.toggleLiked(recipeId);
 	    if (isLikedUpdated) {
-	        ImageIcon updatedIcon = new ImageIcon(new ImageIcon(newImagePath).getImage().
-	        		getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
+	        ImageIcon updatedIcon = new ImageIcon(new ImageIcon(newImagePath).getImage()
+	            .getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
+
 	        model.setValueAt(updatedIcon, row, 0);
 	        model.setValueAt(newLikeStatus, row, 5);
-	        
-	        table.revalidate();
+
+	        if (model instanceof AbstractTableModel) {
+	            ((AbstractTableModel) model).fireTableDataChanged();
+	        }
 	        table.repaint();
 	    }
 	}

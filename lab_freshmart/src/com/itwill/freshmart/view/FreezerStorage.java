@@ -391,14 +391,22 @@ public class FreezerStorage extends JFrame {
 	}
 
 	private void updateTableByExpirationDate(List<Freshmart> sortedList) {
-		DefaultTableModel model = (DefaultTableModel) table.getModel();
-		model.setRowCount(0);
+	    DefaultTableModel model = (DefaultTableModel) table.getModel();
+	    model.setRowCount(0);
 
-		for (Freshmart freshmart : sortedList) {
-			Object[] rowData = new Object[] { freshmart.getFoodname(), freshmart.getTypeid(),
-					freshmart.getFoodquantity(), freshmart.getExpirationdate(), };
-			model.addRow(rowData);
-		}
+	    for (Freshmart freshmart : sortedList) {
+	        // typeId를 foodCategory로 변환
+	        String categoryName = freshmartDao.getFoodCategoryNameById(freshmart.getTypeid());
+
+	        Object[] rowData = new Object[] { 
+	            freshmart.getFoodname(), 
+	            categoryName, // 카테고리 이름 추가
+	            freshmart.getFoodquantity(), 
+	            freshmart.getExpirationdate(), 
+	            freshmart.getId() 
+	        };
+	        model.addRow(rowData);
+	    }
 	}
 
 	private void ExpirationDateBydesc(String storage) {
