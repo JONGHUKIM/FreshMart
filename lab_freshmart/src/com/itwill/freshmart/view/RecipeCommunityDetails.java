@@ -72,6 +72,7 @@ public class RecipeCommunityDetails extends JFrame {
 	            } catch (Exception e) {
 	                e.printStackTrace();
 	            }
+	        }
 	    });
 	}
 	private RecipeCommunityDetails(Component parentComponent, UpdateNotify app, Integer id) {
