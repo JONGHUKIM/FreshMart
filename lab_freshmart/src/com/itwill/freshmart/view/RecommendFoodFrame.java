@@ -6,14 +6,16 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -39,6 +41,7 @@ public class RecommendFoodFrame extends JFrame {
 	private JLabel expirationDateLabel;
 
 	private FreshmartDao freshmartDao;
+	private JButton btnGoRecipeCommunity;
 
 	/**
 	 * Launch the application.
@@ -67,6 +70,7 @@ public class RecommendFoodFrame extends JFrame {
 	 */
 	// Import는 동일합니다.
 	public void initialize() {
+		
 	    contentPane = new JPanel();
 	    contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    setContentPane(contentPane);
@@ -144,8 +148,19 @@ public class RecommendFoodFrame extends JFrame {
 
 	    JLabel recipeSuggestionLabel = new JLabel("더 맛있게 먹을 수 있는 레시피가 궁금하다면?");
 	    recipeSuggestionLabel.setFont(new Font("맑은 고딕", Font.BOLD, 14));
-	    recipeSuggestionLabel.setBounds(20, 248, 435, 20);
+	    recipeSuggestionLabel.setBounds(20, 266, 435, 20);
 	    contentPane.add(recipeSuggestionLabel);
+	    
+	    btnGoRecipeCommunity = new JButton("Community");
+	    btnGoRecipeCommunity.addActionListener(new ActionListener() {
+	        @Override
+	        public void actionPerformed(ActionEvent e) {
+	            RecipeCommunityMain.showRecipeCommunityMain(RecommendFoodFrame.this);
+	        }
+	    });
+	    btnGoRecipeCommunity.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+	    btnGoRecipeCommunity.setBounds(317, 267, 111, 23);
+	    contentPane.add(btnGoRecipeCommunity);
 
 	    // 음식 데이터 가져오기
 	    List<Freshmart> fridgeFoodList = freshmartDao.readByExpirationDateAsc("냉장실");
@@ -222,6 +237,4 @@ public class RecommendFoodFrame extends JFrame {
 	        JOptionPane.showMessageDialog(this, "추천할 수 있는 음식이 없습니다.");
 	    }
 	}
-
-
 }

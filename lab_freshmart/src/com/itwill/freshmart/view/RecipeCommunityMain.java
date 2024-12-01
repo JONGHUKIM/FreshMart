@@ -272,37 +272,27 @@ public class RecipeCommunityMain extends JFrame implements CreateNotify, UpdateN
 			return this;
 		}
 	}
-
-	private void toggleLikeStatus(Integer id, int row) {
-
-	    ImageIcon currentIcon = (ImageIcon) model.getValueAt(row, 0);
-
-	    String currentLikeStatus = (String) model.getValueAt(row, 5); 
-
 	
-	    if (currentLikeStatus == null) {
-	        currentLikeStatus = "N";
-	    }
+	private static final String LIKE_IMAGE_PATH = "C:\\Users\\MYCOM\\Desktop\\like\\like.png";
+	private static final String NON_LIKE_IMAGE_PATH = "C:\\Users\\MYCOM\\Desktop\\like\\non_like.png";
 
+	private void toggleLikeStatus(Integer recipeId, int row) {
+	    ImageIcon currentIcon = (ImageIcon) model.getValueAt(row, 0);
+	    String currentLikeStatus = (String) model.getValueAt(row, 5);
+	    currentLikeStatus = currentLikeStatus == null ? "N" : currentLikeStatus;
 
-	    String newStatus = currentLikeStatus.equals("Y") ? "N" : "Y";
+	    String newLikeStatus = currentLikeStatus.equals("Y") ? "N" : "Y";
+	    String newImagePath = newLikeStatus.equals("Y") ? LIKE_IMAGE_PATH : NON_LIKE_IMAGE_PATH;
 
-	    String newImagePath = newStatus.equals("Y") 
-	            ? "C:\\Users\\MYCOM\\Desktop\\like\\like.png" 
-	            : "C:\\Users\\MYCOM\\Desktop\\like\\non_like.png";
-
-
-	    boolean isLikedUpdated = recipeCommunityDao.toggleLiked(id);
+	    boolean isLikedUpdated = recipeCommunityDao.toggleLiked(recipeId);
 	    if (isLikedUpdated) {
-
-	        ImageIcon updatedIcon = new ImageIcon(new ImageIcon(newImagePath).getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
-
+	        ImageIcon updatedIcon = new ImageIcon(new ImageIcon(newImagePath).getImage().
+	        		getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH));
 	        model.setValueAt(updatedIcon, row, 0);
-
-	        model.setValueAt(newStatus, row, 5);
-
+	        model.setValueAt(newLikeStatus, row, 5);
+	        
+	        table.revalidate();
 	        table.repaint();
-	       
 	    }
 	}
 
